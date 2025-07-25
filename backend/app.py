@@ -239,7 +239,16 @@ def google_callback():
         flow.redirect_uri = "http://localhost:3000/auth/google/callback"
         
         # 使用授权码获取访问令牌
-        flow.fetch_token(code=code)
+        try:
+            flow.fetch_token(code=code)
+        except Exception as token_error:
+            error_msg = str(token_error)
+            if 'invalid_grant' in error_msg:
+                return jsonify({'error': '授权码无效或已过期，请重新登录'}), 400
+            elif 'redirect_uri_mismatch' in error_msg:
+                return jsonify({'error': '重定向URI不匹配'}), 400
+            else:
+                return jsonify({'error': f'获取访问令牌失败: {error_msg}'}), 400
         
         # 获取用户信息
         credentials = flow.credentials
