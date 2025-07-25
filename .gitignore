@@ -7,7 +7,7 @@ dist/
 build/
 *.exe
 *.dll
-
+ContextHub 前端-Paraflow/
 # 日志文件
 *.log
 logs/
