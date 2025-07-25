@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { Search, Grid, List, Eye, Download, Share2, Trash2 } from 'lucide-react'
 import { Header } from '@/components/Header'
 import { Sidebar } from '@/components/Sidebar'
-import { ContextProcessor } from '@/components/ContextProcessor'
 import { ContextCard } from '@/components/ContextCard'
 import { ContextViewer } from '@/components/ContextViewer'
-import type { ContextFile, UploadFile } from '@/types/context'
+import type { ContextFile } from '@/types/context'
+import type { User } from '@/types/user'
 
 // Mock data updated to include system_prompt, conversation, and assets
 const mockContexts: ContextFile[] = [
@@ -91,9 +91,13 @@ const mockContexts: ContextFile[] = [
   }
 ]
 
-export function ContextList() {
+interface ContextListProps {
+  user: User | null
+  onLogout: () => void
+}
+
+export function ContextList({ user, onLogout }: ContextListProps) {
   const [contexts, setContexts] = useState<ContextFile[]>(mockContexts)
-  const [isProcessorOpen, setIsProcessorOpen] = useState(false)
   const [isViewerOpen, setIsViewerOpen] = useState(false)
   const [selectedContext, setSelectedContext] = useState<ContextFile | null>(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
@@ -101,12 +105,6 @@ export function ContextList() {
   const [selectedSort, setSelectedSort] = useState('name')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
-
-  const handleUpload = (files: UploadFile[]) => {
-    console.log('Uploading files:', files)
-    // Here you would handle the actual file upload
-    setIsProcessorOpen(false)
-  }
 
   const handleNewContext = () => {
     console.log('Creating new context')
@@ -166,10 +164,11 @@ export function ContextList() {
   return (
     <div className="w-full min-h-screen">
       <Header
-        onUpload={() => setIsProcessorOpen(true)}
         onNewContext={handleNewContext}
         isDarkMode={isDarkMode}
         onToggleTheme={() => setIsDarkMode(!isDarkMode)}
+        user={user}
+        onLogout={onLogout}
       />
       
       <div className="flex w-full">
@@ -250,12 +249,6 @@ export function ContextList() {
           </div>
         </main>
       </div>
-
-      <ContextProcessor
-        isOpen={isProcessorOpen}
-        onClose={() => setIsProcessorOpen(false)}
-        onUpload={handleUpload}
-      />
 
       <ContextViewer
         context={selectedContext}

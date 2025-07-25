@@ -1,20 +1,26 @@
 import React, { useCallback, useState, useEffect } from 'react'
-import { Upload, X, FileText, AlertCircle, CheckCircle, Cloud, FolderOpen, Loader, ArrowRight, Sparkles, Clock } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
+import { Upload, X, FileText, AlertCircle, CheckCircle, Cloud, FolderOpen, Loader, ArrowRight, Sparkles, Clock, Copy, Save } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { processFileWithKimi, readFileContent } from '@/utils/kimiApi'
-import type { UploadFile, ProcessingFile, ProcessingState } from '@/types/context'
+import { generateSpecsFile, downloadSpecsFile, generateSpecsFileName } from '@/utils/specsGenerator'
+import { Header } from '@/components/Header'
+import type { UploadFile, ProcessingFile, ProcessingState, SpecsProcessingResult } from '@/types/context'
+import type { User } from '@/types/user'
+import type { SpecsFile } from '@/types/specs'
 
 interface ContextProcessorProps {
-  isOpen: boolean
-  onClose: () => void
-  onUpload: (files: UploadFile[]) => void
+  user: User | null
+  onLogout: () => void
 }
 
-export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessorProps) {
+export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [dragActive, setDragActive] = useState(false)
   const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([])
   const [processingFiles, setProcessingFiles] = useState<ProcessingFile[]>([])
   const [currentStep, setCurrentStep] = useState<'upload' | 'process' | 'complete'>('upload')
+  const [processingProgress, setProcessingProgress] = useState(0)
 
   const handlePaste = useCallback(async (e: ClipboardEvent) => {
     e.preventDefault()
@@ -57,13 +63,11 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
   }, [])
 
   useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('paste', handlePaste)
-      return () => {
-        document.removeEventListener('paste', handlePaste)
-      }
+    document.addEventListener('paste', handlePaste)
+    return () => {
+      document.removeEventListener('paste', handlePaste)
     }
-  }, [isOpen, handlePaste])
+  }, [handlePaste])
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -122,6 +126,7 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
     if (uploadFiles.length === 0) return
 
     setCurrentStep('process')
+    setProcessingProgress(0)
     
     // 转换为ProcessingFile格式
     const files: ProcessingFile[] = uploadFiles.map(file => ({
@@ -146,8 +151,30 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
           index === i ? { ...file, content, processingState: 'processing' } : file
         ))
 
-        // 调用Kimi API处理
-        const result = await processFileWithKimi(content, files[i].name)
+        // 调用Kimi API处理并生成.specs文件
+        const apiResult = await processFileWithKimi(content, files[i].name)
+        
+        // 生成.specs文件 - 使用新的状态链结构
+        const specsFile = generateSpecsFile(
+          files[i].name,
+          content,
+          apiResult.contextAnalysis,
+          apiResult.processingTime
+        )
+        
+        const specsFileName = generateSpecsFileName(
+          files[i].name, 
+          apiResult.contextAnalysis.metadata.name
+        )
+        
+        const result: SpecsProcessingResult = {
+          summary: apiResult.summary,
+          generatedAt: apiResult.generatedAt,
+          processingTime: apiResult.processingTime,
+          specsFile,
+          specsFileName,
+          contextAnalysis: apiResult.contextAnalysis
+        }
         
         // 更新结果
         setProcessingFiles(prev => prev.map((file, index) => 
@@ -157,6 +184,9 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
             result 
           } : file
         ))
+
+        // 更新进度
+        setProcessingProgress(Math.round(((i + 1) / files.length) * 100))
       } catch (error) {
         setProcessingFiles(prev => prev.map((file, index) => 
           index === i ? { 
@@ -165,6 +195,9 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
             error: error instanceof Error ? error.message : '处理失败'
           } : file
         ))
+
+        // 更新进度（即使出错也要更新）
+        setProcessingProgress(Math.round(((i + 1) / files.length) * 100))
       }
     }
 
@@ -175,18 +208,18 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
     const completedFiles = processingFiles.filter(f => f.processingState === 'completed')
     if (completedFiles.length === 0) return
 
-    // 模拟上传过程
-    const updatedFiles = completedFiles.map(file => ({
-      ...file,
-      status: 'success' as const
-    }))
+    // 生成唯一ID
+    const uploadId = Date.now().toString(36) + Math.random().toString(36).substring(2)
     
     setTimeout(() => {
-      onUpload(updatedFiles)
-      onClose()
+      // 上传成功后，在URL中添加id参数
+      setSearchParams({ id: uploadId })
+      
+      // 重置状态
       setUploadFiles([])
       setProcessingFiles([])
       setCurrentStep('upload')
+      setProcessingProgress(0)
     }, 1000)
   }
 
@@ -198,7 +231,10 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
     setProcessingFiles(prev => prev.filter((_, i) => i !== index))
   }
 
-  if (!isOpen) return null
+  const handleNewContext = () => {
+    console.log('创建新上下文')
+    // 创建新上下文逻辑
+  }
 
   const renderStepIndicator = () => (
     <div className="flex items-center justify-center mb-6">
@@ -318,9 +354,25 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
       <div className="text-center">
         {currentStep === 'upload' && (
           <>
-            <Sparkles className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-medium mb-2" style={{ color: 'rgba(7, 11, 17, 1)' }}>
-              AI智能处理
+            <div 
+              onClick={uploadFiles.length > 0 ? handleProcess : undefined}
+              className={`w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-lg ${
+                uploadFiles.length > 0 
+                  ? 'cursor-pointer hover:bg-gray-100 transition-colors' 
+                  : 'cursor-not-allowed opacity-50'
+              }`}
+              style={{ backgroundColor: 'rgba(241, 245, 249, 1)' }}
+            >
+              <Sparkles className="w-8 h-8 text-gray-600" />
+            </div>
+            <h3 
+              onClick={uploadFiles.length > 0 ? handleProcess : undefined}
+              className={`text-lg font-medium mb-2 ${
+                uploadFiles.length > 0 ? 'cursor-pointer hover:text-blue-600' : 'cursor-not-allowed'
+              }`} 
+              style={{ color: 'rgba(7, 11, 17, 1)' }}
+            >
+              Specs获取
             </h3>
             <p className="text-sm mb-6" style={{ color: 'rgba(136, 138, 139, 1)' }}>
               点击开始处理文件，AI将为您生成总结和分析
@@ -328,11 +380,11 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
             <button
               onClick={handleProcess}
               disabled={uploadFiles.length === 0}
-              className="btn btn-primary flex items-center space-x-2"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>开始处理</span>
-              <ArrowRight className="w-4 h-4" />
+              <Sparkles className="w-4 h-4 mr-2" />
+              开始处理
+              <ArrowRight className="w-4 h-4 ml-2" />
             </button>
           </>
         )}
@@ -340,9 +392,6 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
         {currentStep === 'process' && (
           <>
             <Loader className="w-16 h-16 mx-auto mb-4 text-blue-500 animate-spin" />
-            <h3 className="text-lg font-medium mb-2" style={{ color: 'rgba(7, 11, 17, 1)' }}>
-              正在处理中...
-            </h3>
             <p className="text-sm" style={{ color: 'rgba(136, 138, 139, 1)' }}>
               AI正在分析和总结您的文件内容
             </p>
@@ -356,15 +405,87 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
               处理完成
             </h3>
             <p className="text-sm mb-6" style={{ color: 'rgba(136, 138, 139, 1)' }}>
-              所有文件已成功处理，点击上传保存结果
+              所有文件已成功处理，选择您要进行的操作
             </p>
-            <button
-              onClick={handleUpload}
-              className="btn btn-primary flex items-center space-x-2"
-            >
-              <Upload className="w-4 h-4" />
-              <span>上传结果</span>
-            </button>
+            <div className="inline-flex rounded-lg border border-gray-200 bg-white shadow-sm">
+              <button
+                onClick={() => {
+                  try {
+                    const completedFiles = processingFiles.filter(f => f.processingState === 'completed')
+                    
+                    if (completedFiles.length === 0) {
+                      alert('没有已完成的文件可供复制')
+                      return
+                    }
+                    
+                    // 生成用于复制的文本内容
+                    const copyText = completedFiles.map(file => {
+                      const specs = file.result?.specsFile?.compressed_context
+                      if (!specs) return ''
+                      
+                      return `文件: ${file.name}
+对话总结: ${specs.conversation_summary}
+用户画像: ${specs.user_profile?.communication_style} / ${specs.user_profile?.expertise_level}
+关键讨论: ${specs.key_discussions?.map((d: any) => d.topic).join(', ') || '无'}
+待办任务: ${specs.ongoing_tasks?.map((t: any) => t.task).join(', ') || '无'}
+---`
+                    }).join('\n\n')
+                    
+                    // 复制到剪贴板
+                    navigator.clipboard.writeText(copyText).then(() => {
+                      console.log('结果已复制到剪贴板')
+                      // 可以添加一个临时的成功提示
+                    }).catch(() => {
+                      // 降级方案：选择文本
+                      const textArea = document.createElement('textarea')
+                      textArea.value = copyText
+                      document.body.appendChild(textArea)
+                      textArea.select()
+                      document.execCommand('copy')
+                      document.body.removeChild(textArea)
+                      console.log('结果已复制到剪贴板（降级模式）')
+                    })
+                  } catch (error) {
+                    console.error('复制失败:', error)
+                    alert('复制失败，请重试')
+                  }
+                }}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border-r border-gray-200 rounded-l-lg hover:bg-gray-50 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:text-blue-600 transition-colors"
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                复制结果
+              </button>
+              <button
+                onClick={() => {
+                  try {
+                    // 下载.specs文件
+                    const completedFiles = processingFiles.filter(f => f.processingState === 'completed')
+                    
+                    if (completedFiles.length === 0) {
+                      alert('没有已完成的文件可供下载')
+                      return
+                    }
+                    
+                    completedFiles.forEach(file => {
+                      if (file.result?.specsFile) {
+                        downloadSpecsFile(file.result.specsFile, file.result.specsFileName)
+                      }
+                    })
+                    
+                    // 显示成功提示
+                    console.log(`成功下载 ${completedFiles.length} 个.specs文件`)
+                    handleUpload()
+                  } catch (error) {
+                    console.error('下载文件失败:', error)
+                    alert('下载文件失败，请重试')
+                  }
+                }}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-r-lg hover:bg-gray-700 focus:z-10 focus:ring-2 focus:ring-blue-500 transition-colors"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                下载.specs文件
+              </button>
+            </div>
           </>
         )}
       </div>
@@ -428,11 +549,73 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
               </div>
               
               {file.result && (
-                <div className="text-xs" style={{ color: 'rgba(136, 138, 139, 1)' }}>
-                  <p className="mb-2">{file.result.summary}</p>
-                  <div className="flex justify-between">
+                <div className="text-xs space-y-3" style={{ color: 'rgba(136, 138, 139, 1)' }}>
+                  {/* 基本信息 */}
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">.specs文件: {file.result.specsFileName}</span>
                     <span>处理时间: {(file.result.processingTime / 1000).toFixed(1)}s</span>
-                    <span>{new Date(file.result.generatedAt).toLocaleTimeString()}</span>
+                  </div>
+                  
+                  {/* 项目信息 */}
+                  <div>
+                    <div className="font-medium text-gray-700 mb-1">项目信息:</div>
+                    <div className="ml-2 space-y-1">
+                      <div>• 项目名称: {file.result.specsFile?.metadata?.name || '未命名项目'}</div>
+                      <div>• 任务类型: {file.result.specsFile?.metadata?.task_type || 'general_chat'}</div>
+                      <div>• 概述: {file.result.summary}</div>
+                    </div>
+                  </div>
+                  
+                  {/* 角色定位 */}
+                  {file.result.specsFile?.instructions?.role_and_goal && (
+                    <div>
+                      <div className="font-medium text-gray-700 mb-1">AI角色:</div>
+                      <p className="text-gray-600 ml-2">{file.result.specsFile.instructions.role_and_goal}</p>
+                    </div>
+                  )}
+                  
+                  {/* 资产状态链 */}
+                  {file.result.specsFile?.assets?.files && Object.keys(file.result.specsFile.assets.files).length > 0 && (
+                    <div>
+                      <div className="font-medium text-gray-700 mb-1">项目资产:</div>
+                      <div className="ml-2">
+                        {Object.entries(file.result.specsFile.assets.files).slice(0, 3).map(([filePath, asset]: [string, any], idx: number) => {
+                          const latestState = asset.state_chain?.[asset.state_chain.length - 1]
+                          return (
+                            <div key={idx} className="mb-1">
+                              <div>• {filePath} ({asset.asset_id})</div>
+                              {latestState && (
+                                <div className="text-gray-500 ml-4">
+                                  最新: {latestState.state_id} - {latestState.summary?.substring(0, 60)}...
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })}
+                        {Object.keys(file.result.specsFile.assets.files).length > 3 && (
+                          <div className="text-gray-500">... 还有 {Object.keys(file.result.specsFile.assets.files).length - 3} 个资产</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* 对话历史 */}
+                  {file.result.specsFile?.history?.length > 0 && (
+                    <div>
+                      <div className="font-medium text-gray-700 mb-1">对话记录:</div>
+                      <div className="ml-2">
+                        <div>共 {file.result.specsFile.history.length} 轮对话</div>
+                        {file.result.specsFile.history.slice(-2).map((historyItem: any, idx: number) => (
+                          <div key={idx} className="text-gray-500 mb-1">
+                            • {historyItem.role}: {historyItem.content?.substring(0, 40)}...
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="text-right text-gray-400">
+                    {new Date(file.result.generatedAt).toLocaleTimeString()}
                   </div>
                 </div>
               )}
@@ -448,39 +631,39 @@ export function ContextProcessor({ isOpen, onClose, onUpload }: ContextProcessor
   )
 
   return (
-    <div 
-      className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50"
-      style={{ backgroundColor: 'rgba(7, 11, 17, 0.5)' }}
-    >
-      <div 
-        className="overflow-hidden w-[1200px] h-[800px] rounded-lg shadow-xl bg-white"
-      >
-        <div className="flex justify-between items-center px-6 py-4 border-b">
-          <h2 className="text-xl font-medium" style={{ color: 'rgba(7, 11, 17, 1)' }}>
+    <div className="w-full min-h-screen bg-gray-50">
+      <Header
+        onNewContext={handleNewContext}
+        isDarkMode={false}
+        onToggleTheme={() => {}}
+        user={user}
+        onLogout={onLogout}
+      />
+      
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-medium" style={{ color: 'rgba(7, 11, 17, 1)' }}>
             上下文处理器
-          </h2>
-          <button
-            onClick={onClose}
-            className="flex justify-center items-center w-10 h-10 hover:bg-gray-100 rounded transition-colors"
-            style={{ color: 'rgba(136, 138, 139, 1)' }}
-          >
-            <X className="w-5 h-5" />
-          </button>
+          </h1>
+          
+          {searchParams.get('id') && (
+            <div className="flex items-center space-x-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+              <CheckCircle className="w-4 h-4" />
+              <span>上传成功 - ID: {searchParams.get('id')}</span>
+            </div>
+          )}
         </div>
-
-        <div className="p-6">
-          {renderStepIndicator()}
-        </div>
-
-        <div className="flex h-[calc(100%-140px)]">
-          {renderUploadSection()}
-          {renderProcessSection()}
-          {renderResultSection()}
+        
+        {renderStepIndicator()}
+        
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="flex h-[600px]">
+            {renderUploadSection()}
+            {renderProcessSection()}
+            {renderResultSection()}
+          </div>
         </div>
       </div>
     </div>
   )
 }
-
-// 保持向后兼容
-export { ContextProcessor as UploadModal }

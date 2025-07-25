@@ -1,4 +1,5 @@
 import type { ProcessingResult } from '@/types/context'
+import type { ContextAnalysisResult } from '@/types/specs'
 
 export interface KimiApiConfig {
   apiKey?: string
@@ -10,29 +11,52 @@ export class KimiApiService {
 
   constructor(config: KimiApiConfig = {}) {
     this.config = {
-      apiKey: config.apiKey || 'sk-7hIpkoYCNZ6GdKVadMtlGtU2NZ8sz4TbTVI33VvisT3SwUE0',
-      baseUrl: config.baseUrl || 'https://api.moonshot.cn/v1',
+      apiKey: config.apiKey || import.meta.env.VITE_KIMI_API_KEY || 'sk-7hIpkoYCNZ6GdKVadMtlGtU2NZ8sz4TbTVI33VvisT3SwUE0',
+      baseUrl: config.baseUrl || import.meta.env.VITE_KIMI_BASE_URL || 'https://api.moonshot.cn/v1',
       ...config
     }
   }
 
-  async processFile(content: string, fileName: string): Promise<ProcessingResult> {
+  async processFile(content: string, fileName: string): Promise<ProcessingResult & { contextAnalysis: ContextAnalysisResult }> {
     const startTime = Date.now()
     
     try {
-      // 调用真实的Kimi API
-      const summary = await this.callRealKimiAPI(content, fileName)
+      // 调用真实的Kimi API进行聊天压缩分析
+      const compressedContextData = await this.callRealKimiAPI(content, fileName)
       
       const processingTime = Date.now() - startTime
       
+      // 解析JSON响应
+      const contextAnalysis: ContextAnalysisResult = JSON.parse(compressedContextData)
+      
       return {
-        summary,
+        summary: this.extractSummaryFromAnalysis(contextAnalysis),
         generatedAt: new Date().toISOString(),
-        processingTime
+        processingTime,
+        contextAnalysis
       }
     } catch (error) {
       throw new Error(`Kimi API调用失败: ${error instanceof Error ? error.message : '未知错误'}`)
     }
+  }
+
+  private extractSummaryFromAnalysis(analysis: ContextAnalysisResult): string {
+    // 从分析结果中提取摘要信息
+    const projectName = analysis.metadata?.name || '上下文分析'
+    const taskType = analysis.metadata?.task_type || 'general_chat'
+    const fileCount = Object.keys(analysis.assets?.files || {}).length
+    
+    let summary = `项目: ${projectName} (${taskType})`
+    
+    if (fileCount > 0) {
+      summary += `，包含 ${fileCount} 个资产文件`
+    }
+    
+    if (analysis.history?.length > 0) {
+      summary += `，${analysis.history.length} 轮对话记录`
+    }
+    
+    return summary
   }
 
   private async callRealKimiAPI(content: string, fileName: string): Promise<string> {
@@ -43,19 +67,80 @@ export class KimiApiService {
         'Authorization': `Bearer ${this.config.apiKey}`
       },
       body: JSON.stringify({
-        model: 'kimi-k2-0711-preview',
+        model: import.meta.env.VITE_KIMI_MODEL || 'kimi-k2-0711-preview',
         messages: [
           {
             role: 'system',
-            content: '你是一个专业的文档分析助手。请对用户提供的文件内容进行详细分析和总结，包括主要内容、结构、关键信息等。请用中文回复。'
+            content: '你是一个专业的代码和文档分析专家，能够深入理解各种编程语言和文档格式。请提供准确、详细的分析结果，并严格按照要求的JSON格式返回。'
           },
           {
             role: 'user',
-            content: `请分析以下文件"${fileName}"的内容并提供详细总结：\n\n${content}`
+            content: `你是专业的对话上下文重构专家。请将聊天记录转换为带有状态链的项目上下文文件。
+
+任务：分析聊天记录，识别其中涉及的文件/资产变化，构建状态链时间线。
+
+返回JSON格式：
+{
+  "metadata": {
+    "name": "从聊天记录提取的项目名称",
+    "task_type": "根据内容判断(general_chat/document_analysis/code_project)"
+  },
+  "instructions": {
+    "role_and_goal": "AI助手的角色定位和目标"
+  },
+  "assets": {
+    "files": {
+      "文件路径": {
+        "asset_id": "file-001", 
+        "state_chain": [
+          {
+            "state_id": "s0",
+            "timestamp": "时间戳",
+            "summary": "状态变更原因说明",
+            "content": "初始内容"
+          }
+        ]
+      }
+    }
+  },
+  "examples": [
+    {
+      "context": "关键信息点",
+      "usage": "使用说明"
+    }
+  ],
+  "history": [
+    {
+      "role": "user/assistant/system",
+      "content": "对话内容，可引用[asset: file-001, state: s0]",
+      "timestamp": "时间戳",
+      "metadata": {
+        "asset_reference": "file-001:s0"
+      }
+    }
+  ]
+}
+
+分析要点：
+1. 识别聊天中涉及的文件、代码、文档等资产
+2. 追踪每个资产的状态变化时间线
+3. 将对话与具体的资产状态绑定
+4. 提取项目演化的关键节点
+5. 保持时间线的连续性和可追溯性
+
+文件信息：
+- 原始文件: ${fileName}
+- 处理模型: kimi-k2-0711-preview
+
+聊天记录：
+\`\`\`
+${content}
+\`\`\``
           }
         ],
-        temperature: 0.6,
-        max_tokens: 1000
+        temperature: 0.3,
+        max_tokens: 1000,
+        response_format: { type: "json_object" }
       })
     })
 
@@ -78,32 +163,7 @@ export class KimiApiService {
     }
   }
 
-  private generateSummary(content: string, fileName: string): string {
-    // 模拟AI生成的总结
-    const fileType = this.getFileType(fileName)
-    const wordCount = content.length
-    
-    const summaries: Record<string, string> = {
-      json: `分析了JSON配置文件"${fileName}"，包含${Math.ceil(wordCount / 50)}个配置项。主要包含系统配置、用户设置和API端点配置。建议优化配置结构以提高可维护性。`,
-      
-      md: `解析了Markdown文档"${fileName}"，共${Math.ceil(wordCount / 100)}个段落。文档结构清晰，包含标题、列表和代码块。建议添加更多示例和说明以提高可读性。`,
-      
-      txt: `处理了文本文件"${fileName}"，共${Math.ceil(wordCount / 5)}个单词。内容涵盖多个主题，语言简洁明了。建议按主题分段，增强文档的组织性。`,
-      
-      html: `分析了HTML文件"${fileName}"，包含${Math.ceil(wordCount / 80)}个元素。页面结构合理，使用了语义化标签。建议优化CSS样式和添加响应式设计。`,
-      
-      ct: `解析了上下文文件"${fileName}"，包含丰富的对话历史和系统提示。总共${Math.ceil(wordCount / 150)}轮对话。建议整理关键信息并建立知识索引。`,
-      
-      default: `分析了文件"${fileName}"，共${wordCount}个字符。文件内容结构良好，信息丰富。建议进一步分类整理以便后续使用。`
-    }
 
-    return summaries[fileType] || summaries.default
-  }
-
-  private getFileType(fileName: string): string {
-    const extension = fileName.toLowerCase().split('.').pop() || ''
-    return ['json', 'md', 'txt', 'html', 'ct'].includes(extension) ? extension : 'default'
-  }
 
   async testConnection(): Promise<boolean> {
     try {

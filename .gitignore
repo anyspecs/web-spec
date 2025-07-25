@@ -5,13 +5,19 @@ vendor/
 # 编译输出
 dist/
 build/
+
+
 *.exe
 *.dll
+
+memory-bank/
+docs/
+test/
 ContextHub 前端-Paraflow/
 # 日志文件
 *.log
 logs/
-
+backend/.env
 # 环境变量文件
 .env
 .env.local

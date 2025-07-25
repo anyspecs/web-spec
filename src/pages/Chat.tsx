@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { ArrowLeft, MessageCircle, Settings, FileText } from 'lucide-react'
+import { ArrowLeft, MessageCircle, Settings, FileText, User as UserIcon } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ModelSelector } from '@/components/ModelSelector'
 import { ChatInterface } from '@/components/ChatInterface'
 import type { ChatSession, AIModel, ChatConfig, ChatMessage } from '@/types/chat'
 import type { ContextFile } from '@/types/context'
+import type { User } from '@/types/user'
 
 // Mock data
 const mockModels: AIModel[] = [
@@ -48,7 +49,12 @@ const defaultConfig: ChatConfig = {
   presencePenalty: 0
 }
 
-export function Chat() {
+interface ChatProps {
+  user: User | null
+  onLogout: () => void
+}
+
+export function Chat({ user, onLogout }: ChatProps) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const contextId = searchParams.get('context')
@@ -256,6 +262,21 @@ export function Chat() {
               <div className="text-sm text-gray-500">
                 {session.messages.filter(m => m.role !== 'system').length} 条消息
               </div>
+              
+              {user && (
+                <div className="flex items-center space-x-2 ml-4">
+                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                    <UserIcon className="w-4 h-4 text-gray-600" />
+                  </div>
+                  <div className="text-sm text-gray-600">{user.name}</div>
+                  <button
+                    onClick={onLogout}
+                    className="px-2 py-1 text-xs text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:bg-gray-50"
+                  >
+                    退出
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

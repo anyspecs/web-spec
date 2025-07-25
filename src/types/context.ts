@@ -44,9 +44,16 @@ export interface ProcessingResult {
   processingTime: number
 }
 
+// .specs文件处理结果 - 更新为状态链结构
+export interface SpecsProcessingResult extends ProcessingResult {
+  specsFile?: import('@/types/specs').SpecsFile // 生成的.specs文件数据
+  specsFileName?: string // .specs文件名
+  contextAnalysis?: import('@/types/specs').ContextAnalysisResult // AI分析的原始结果
+}
+
 // 文件处理接口
 export interface ProcessingFile extends UploadFile {
   content?: string
   processingState: ProcessingState
-  result?: ProcessingResult
+  result?: SpecsProcessingResult
 } 
