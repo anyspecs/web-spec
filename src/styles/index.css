@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900;
+    background-color: rgba(244, 246, 248, 1);
+    line-height: 1.4;
+  }
+  
+  * {
+    @apply border-gray-200;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-primary {
+    @apply btn bg-gray-900 text-white hover:bg-gray-800;
+    background-color: rgba(33, 37, 40, 1);
+  }
+  
+  .btn-secondary {
+    @apply btn bg-gray-100 text-gray-900 hover:bg-gray-200;
+    background-color: rgba(244, 246, 248, 1);
+    color: rgba(7, 11, 17, 1);
+  }
+  
+  .btn-outline {
+    @apply btn border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+  }
+  
+  .btn-sm {
+    @apply h-10 px-4 text-sm;
+  }
+  
+  .btn-md {
+    @apply h-10 px-4 py-2;
+  }
+  
+  .btn-lg {
+    @apply h-12 px-6 text-base;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg border border-gray-200 shadow-github;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 8px;
+  }
+  
+  .card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .input {
+    @apply flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    background-color: rgba(244, 246, 248, 1);
+    border-radius: 6px;
+  }
+  
+  .input:focus {
+    outline: none;
+  }
+  
+  .textarea {
+    @apply flex min-h-[80px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    background-color: rgba(244, 246, 248, 1);
+    border-radius: 6px;
+  }
+  
+  .textarea:focus {
+    outline: none;
+  }
+  
+  .header {
+    height: 64px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: rgba(255, 255, 255, 1);
+  }
+  
+  .upload-area {
+    border: 2px dashed rgba(136, 138, 139, 1);
+    border-radius: 6px;
+    background-color: rgba(244, 246, 248, 1);
+  }
+  
+  .upload-area:hover {
+    border-color: rgba(33, 37, 40, 1);
+  }
+  
+  .progress-bar {
+    overflow: hidden;
+    background-color: rgba(244, 246, 248, 1);
+    height: 6px;
+    border-radius: 3px;
+  }
+  
+  .progress-fill {
+    background-color: rgba(33, 37, 40, 1);
+    height: 100%;
+  }
+  
+  .editor-container {
+    min-height: 200px;
+    border-radius: 6px;
+    background-color: rgba(244, 246, 248, 1);
+  }
+  
+  .editor-container:focus-within {
+    border-color: rgba(33, 37, 40, 1);
+  }
+  
+  .chat-bubble {
+    max-width: 80%;
+    border-radius: 6px;
+  }
+  
+  .chat-bubble-user {
+    background-color: rgba(33, 37, 40, 1);
+    color: rgba(255, 255, 255, 1);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 6px;
+  }
+  
+  .chat-bubble-assistant {
+    background-color: rgba(244, 246, 248, 1);
+    color: rgba(7, 11, 17, 1);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 0;
+  }
+  
+  .collapsible-section {
+    background-color: rgba(244, 246, 248, 1);
+    border-radius: 6px;
+    padding: 1rem;
+  }
+} 
