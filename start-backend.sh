@@ -29,6 +29,14 @@ fi
 # 创建数据库目录
 mkdir -p ../database
 
+# 检查并清理5000端口
+if lsof -Pi :5000 -sTCP:LISTEN -t >/dev/null 2>&1; then
+    echo "📡 检测到5000端口被占用，正在清理..."
+    lsof -ti:5000 | xargs kill -9 2>/dev/null
+    sleep 2
+    echo "🧹 端口清理完成"
+fi
+
 echo "✅ 启动后端服务 (http://localhost:5000)"
 echo "💡 按 Ctrl+C 停止服务"
 echo ""

@@ -13,5 +13,6 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    strictPort: true,  // 强制使用3000端口，如果被占用则报错而不是换端口
   },
 }) 
