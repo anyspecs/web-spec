@@ -1,0 +1,30 @@
+# 依赖目录
+node_modules/
+vendor/
+
+# 编译输出
+dist/
+build/
+*.exe
+*.dll
+
+# 日志文件
+*.log
+logs/
+
+# 环境变量文件
+.env
+.env.local
+
+# IDE 配置文件
+.vscode/
+.idea/
+*.swp
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.temp
