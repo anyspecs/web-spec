@@ -47,7 +47,7 @@ FLASK_SECRET_KEY=你的Flask密钥
 python run.py
 ```
 
-服务将在 `http://localhost:5000` 启动。
+服务将在 `http://localhost:5001` 启动。
 
 ## API 端点
 
@@ -95,7 +95,7 @@ python run.py
 | FLASK_SECRET_KEY | Flask会话密钥 | 必须更改 |
 | DATABASE_URL | 数据库路径 | database/web-spec.db |
 | JWT_EXPIRE_HOURS | JWT过期时间(小时) | 24 |
-| PORT | 服务端口 | 5000 |
+| PORT | 服务端口 | 5001 |
 
 ### 部署注意事项
 

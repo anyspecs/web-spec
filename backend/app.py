@@ -18,6 +18,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from google_auth_oauthlib.flow import Flow
 import requests
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-in-production')
@@ -165,8 +166,25 @@ def get_or_create_user(email, name, avatar_url, provider, provider_id):
 
 @app.route('/api/auth/google/url', methods=['GET'])
 def google_auth_url():
-    """获取Google OAuth授权URL"""
+    """获取Google OAuth授权URL (支持动态回调)"""
     try:
+        # 1. 动态获取客户端请求的回调URI，默认为前端地址
+        redirect_uri = request.args.get(
+            'redirect_uri', 
+            "http://localhost:3000/auth/google/callback"
+        )
+        
+        # 2. 定义所有在Google Cloud Console中注册过的回调URI列表
+        allowed_redirect_uris = [
+            "http://localhost:3000/auth/google/callback",  # 前端
+            "http://localhost:8888/auth/callback",         # CLI工具
+            "http://localhost:8889/auth/callback",         # CLI工具备用
+        ]
+
+        # 安全检查：确保请求的URI是受信任的
+        if redirect_uri not in allowed_redirect_uris:
+            return jsonify({'error': f'Unauthorized redirect_uri: {redirect_uri}'}), 400
+
         flow = Flow.from_client_config(
             {
                 "web": {
@@ -174,7 +192,7 @@ def google_auth_url():
                     "client_secret": GOOGLE_CLIENT_SECRET,
                     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                     "token_uri": "https://oauth2.googleapis.com/token",
-                    "redirect_uris": ["http://localhost:3000/auth/google/callback"]
+                    "redirect_uris": allowed_redirect_uris
                 }
             },
             scopes=[
@@ -184,7 +202,8 @@ def google_auth_url():
             ]
         )
         
-        flow.redirect_uri = "http://localhost:3000/auth/google/callback"
+        # 3. 告知Google本次请求使用哪个回调URI
+        flow.redirect_uri = redirect_uri
         
         auth_url, state = flow.authorization_url(
             access_type='offline',
@@ -192,8 +211,9 @@ def google_auth_url():
             prompt='select_account'
         )
         
-        # 将state存储在session中
+        # 4. 将state和本次请求使用的redirect_uri存入session，以备回调时验证
         session['oauth_state'] = state
+        session['oauth_redirect_uri'] = redirect_uri
         
         return jsonify({
             'auth_url': auth_url,
@@ -205,7 +225,7 @@ def google_auth_url():
 
 @app.route('/api/auth/google/callback', methods=['POST'])
 def google_callback():
-    """Google OAuth回调处理"""
+    """Google OAuth回调处理 (支持动态回调)"""
     try:
         data = request.get_json()
         code = data.get('code')
@@ -214,11 +234,22 @@ def google_callback():
         if not code:
             return jsonify({'error': '未收到授权码'}), 400
         
-        # 验证state (可选，增强安全性)
+        # 安全检查：验证state
         if state and session.get('oauth_state') != state:
             return jsonify({'error': '状态验证失败'}), 400
         
-        # 配置OAuth flow
+        # 1. 从session中安全地取出本次流程对应的回调URI
+        redirect_uri = session.get('oauth_redirect_uri')
+        if not redirect_uri:
+            return jsonify({'error': '认证会话已过期或无效'}), 400
+        
+        allowed_redirect_uris = [
+            "http://localhost:3000/auth/google/callback",
+            "http://localhost:8888/auth/callback",
+            "http://localhost:8889/auth/callback",
+        ]
+
+        # 2. 配置OAuth flow，并告知Google本次回调的URI
         flow = Flow.from_client_config(
             {
                 "web": {
@@ -226,7 +257,7 @@ def google_callback():
                     "client_secret": GOOGLE_CLIENT_SECRET,
                     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                     "token_uri": "https://oauth2.googleapis.com/token",
-                    "redirect_uris": ["http://localhost:3000/auth/google/callback"]
+                    "redirect_uris": allowed_redirect_uris
                 }
             },
             scopes=[
@@ -236,7 +267,8 @@ def google_callback():
             ]
         )
         
-        flow.redirect_uri = "http://localhost:3000/auth/google/callback"
+        # 3. 使用从session中获取的回调URI
+        flow.redirect_uri = redirect_uri
         
         # 使用授权码获取访问令牌
         try:
@@ -246,11 +278,12 @@ def google_callback():
             if 'invalid_grant' in error_msg:
                 return jsonify({'error': '授权码无效或已过期，请重新登录'}), 400
             elif 'redirect_uri_mismatch' in error_msg:
-                return jsonify({'error': '重定向URI不匹配'}), 400
+                # 这是一个非常有用的调试信息
+                return jsonify({'error': f'重定向URI不匹配，后端期望URI: {redirect_uri}'}), 400
             else:
                 return jsonify({'error': f'获取访问令牌失败: {error_msg}'}), 400
         
-        # 获取用户信息
+        # ... (获取用户信息和生成JWT的后续逻辑保持不变) ...
         credentials = flow.credentials
         user_info_response = requests.get(
             'https://www.googleapis.com/oauth2/v2/userinfo',
@@ -262,7 +295,6 @@ def google_callback():
         
         user_info = user_info_response.json()
         
-        # 验证ID令牌
         id_info = id_token.verify_oauth2_token(
             credentials.id_token, 
             google_requests.Request(), 
@@ -272,7 +304,6 @@ def google_callback():
         if id_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
             return jsonify({'error': '无效的令牌发行方'}), 400
         
-        # 提取用户信息
         email = user_info.get('email')
         name = user_info.get('name', '')
         avatar_url = user_info.get('picture', '')
@@ -281,18 +312,11 @@ def google_callback():
         if not email or not provider_id:
             return jsonify({'error': '无法获取必要的用户信息'}), 400
         
-        # 获取或创建用户
         user = get_or_create_user(email, name, avatar_url, 'google', provider_id)
-        
-        # 生成JWT令牌
         jwt_token = generate_jwt_token(user)
         
-        # 记录会话
         with sqlite3.connect(DATABASE) as conn:
-            # 清理该用户的旧会话，避免token冲突
             conn.execute('DELETE FROM user_sessions WHERE user_id = ?', (user['id'],))
-            
-            # 插入新会话
             conn.execute('''
                 INSERT INTO user_sessions (user_id, token, expires_at, ip_address, user_agent)
                 VALUES (?, ?, ?, ?, ?)
@@ -305,8 +329,8 @@ def google_callback():
             ))
             conn.commit()
         
-        # 清除session state
         session.pop('oauth_state', None)
+        session.pop('oauth_redirect_uri', None)
         
         return jsonify({
             'success': True,
@@ -496,4 +520,4 @@ def health_check():
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    app.run(debug=True, port=5001, host='0.0.0.0')
