@@ -1,6 +1,5 @@
 import React from 'react'
-import { FileText, Eye, Download, Share2, Trash2, MessageCircle } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { FileText, Eye, Download, Share2, Trash2 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import type { ContextFile } from '@/types/context'
 
@@ -13,18 +12,12 @@ interface ContextCardProps {
 }
 
 export function ContextCard({ context, onView, onDownload, onDelete, onShare }: ContextCardProps) {
-  const navigate = useNavigate()
-  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     })
-  }
-
-  const handleContinueChat = () => {
-    navigate(`/chat?context=${context.id}`)
   }
 
   return (
@@ -70,15 +63,6 @@ export function ContextCard({ context, onView, onDownload, onDelete, onShare }: 
           更新于 {formatDate(context.updated_at)}
         </span>
         <div className="flex">
-          <button
-            onClick={handleContinueChat}
-            className="flex justify-center items-center w-8 h-8 hover:bg-blue-50 rounded transition-colors mr-1"
-            title="继续对话"
-            style={{ color: 'rgba(59, 130, 246, 1)' }}
-          >
-            <MessageCircle className="w-4 h-4" />
-          </button>
-          
           <button
             onClick={() => onView(context)}
             className="flex justify-center items-center w-8 h-8 hover:bg-gray-100 rounded transition-colors"

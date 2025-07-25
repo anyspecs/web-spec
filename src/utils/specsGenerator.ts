@@ -18,7 +18,8 @@ export function generateSpecsFileName(
     .split(".")[0]; // 去掉毫秒部分
 
   // 使用项目名称或从原文件名提取
-  let baseName = projectName || originalFileName.replace(/\.[^/.]+$/, "");
+  const safeOriginalName = originalFileName || '未知文件';
+  let baseName = projectName || safeOriginalName.replace(/\.[^/.]+$/, "");
 
   // 清理文件名中的特殊字符
   baseName = baseName.replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g, "_");
@@ -31,9 +32,7 @@ export function generateSpecsFileName(
  */
 export function generateSpecsFile(
   originalFileName: string,
-
   contextAnalysis: ContextAnalysisResult,
-
   options: SpecsGenerationOptions = {}
 ): SpecsFile {
   const now = new Date().toISOString();

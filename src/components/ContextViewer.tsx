@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { X, Download, Copy, Edit, Save, MessageSquare, FileText, ChevronDown, ChevronRight, ArrowLeft, MessageCircle, Eye } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { X, Download, Copy, Edit, Save, MessageSquare, FileText, ChevronDown, ChevronRight, ArrowLeft, Eye } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import type { ContextFile, Message, Asset } from '@/types/context'
 
@@ -13,7 +12,6 @@ interface ContextViewerProps {
 }
 
 export function ContextViewer({ context, isOpen, onClose, onSave, onDownload }: ContextViewerProps) {
-  const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
   const [editedContext, setEditedContext] = useState<ContextFile | null>(null)
   const [expandedSections, setExpandedSections] = useState({
@@ -154,13 +152,7 @@ export function ContextViewer({ context, isOpen, onClose, onSave, onDownload }: 
                   <Edit className="w-4 h-4 mr-2" />
                   编辑副本
                 </button>
-                <button
-                  onClick={() => navigate(`/chat?context=${context.id}`)}
-                  className="btn btn-secondary btn-sm mr-3"
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  继续对话
-                </button>
+                {/* Chat functionality removed */}
                 <button
                   onClick={() => onDownload(context)}
                   className="btn btn-primary btn-sm"

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ChevronDown, Settings, Zap, DollarSign, Check } from 'lucide-react'
 import { cn } from '@/utils/cn'
-import type { AIModel, ChatConfig } from '@/types/chat'
+// Remove chat type imports - component may be unused after Chat removal
 
 interface ModelSelectorProps {
   models: AIModel[]

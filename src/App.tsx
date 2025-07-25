@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ContextList } from '@/pages/ContextList'
-import { Chat } from '@/pages/Chat'
 import { ContextProcessor } from '@/pages/ContextProcessor'
 import { Login } from '@/pages/Login'
 import { AuthCallback } from '@/pages/AuthCallback'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { authService } from '@/utils/authService'
 import type { User } from '@/types/user'
 
 function App() {
@@ -13,17 +13,32 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // 检查本地存储中的用户信息
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
+    const initAuth = async () => {
       try {
-        setUser(JSON.parse(savedUser))
+        // 检查本地存储中的用户信息和令牌
+        const savedUser = authService.getStoredUser()
+        const token = localStorage.getItem('authToken')
+        
+        if (savedUser && token) {
+          // 验证令牌是否仍然有效
+          const validUser = await authService.validateToken(token)
+          if (validUser) {
+            setUser(validUser)
+          } else {
+            // 令牌无效，清除本地存储
+            authService.logout()
+          }
+        }
       } catch (error) {
-        console.error('解析用户信息失败:', error)
-        localStorage.removeItem('user')
+        console.error('认证初始化失败:', error)
+        // 清除可能损坏的认证数据
+        authService.logout()
+      } finally {
+        setIsLoading(false)
       }
     }
-    setIsLoading(false)
+
+    initAuth()
   }, [])
 
   const handleLogin = (userData: User) => {
@@ -31,9 +46,14 @@ function App() {
     localStorage.setItem('user', JSON.stringify(userData))
   }
 
-  const handleLogout = () => {
-    setUser(null)
-    localStorage.removeItem('user')
+  const handleLogout = async () => {
+    try {
+      await authService.logout()
+    } catch (error) {
+      console.error('登出失败:', error)
+    } finally {
+      setUser(null)
+    }
   }
 
   if (isLoading) {
@@ -66,14 +86,6 @@ function App() {
         element={
           <ProtectedRoute isAuthenticated={!!user}>
             <ContextList user={user} onLogout={handleLogout} />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/chat" 
-        element={
-          <ProtectedRoute isAuthenticated={!!user}>
-            <Chat user={user} onLogout={handleLogout} />
           </ProtectedRoute>
         } 
       />

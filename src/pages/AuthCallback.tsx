@@ -37,10 +37,13 @@ export function AuthCallback({ onLogin }: AuthCallbackProps) {
         }
 
         // 处理OAuth回调
+        console.log('开始处理OAuth回调，提供商:', provider, '授权码:', code.substring(0, 20) + '...')
         const result = await authService.handleCallback(provider, code)
+        console.log('OAuth回调成功，用户:', result.user, '令牌长度:', result.token?.length)
         
         // 存储认证信息
         authService.storeAuth(result.user, result.token)
+        console.log('认证信息已存储到localStorage')
 
         // 登录成功
         onLogin(result.user)

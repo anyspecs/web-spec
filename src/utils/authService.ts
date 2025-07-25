@@ -141,7 +141,7 @@ export class AuthService {
   // 验证用户令牌
   async validateToken(token: string): Promise<User | null> {
     try {
-      const response = await fetch('/api/auth/validate', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/validate`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -164,7 +164,7 @@ export class AuthService {
     const token = localStorage.getItem('authToken')
     if (token) {
       try {
-        await fetch('/api/auth/logout', {
+        await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`

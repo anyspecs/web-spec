@@ -1,5 +1,5 @@
 import React from 'react'
-import { FileText, Upload, Plus, User as UserIcon, Search, MessageCircle } from 'lucide-react'
+import { FileText, Upload, Plus, User as UserIcon, Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/utils/cn'
 import type { User } from '@/types/user'
@@ -48,14 +48,6 @@ export function Header({ onNewContext, isDarkMode, onToggleTheme, user, onLogout
       </div>
       
       <div className="flex items-center">
-        <button
-          onClick={() => navigate('/chat')}
-          className="btn btn-secondary btn-sm mr-3"
-        >
-          <MessageCircle className="w-4 h-4 mr-2" />
-          AI对话
-        </button>
-        
         <button
           onClick={() => navigate('/processor')}
           className="btn btn-secondary btn-sm mr-3"
