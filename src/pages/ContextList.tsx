@@ -248,7 +248,6 @@ export function ContextList({ user, onLogout }: ContextListProps) {
                       onView={handleView}
                       onDownload={handleDownload}
                       onDelete={handleDelete}
-                      onShare={handleShare}
                     />
                   ))}
                 </div>

@@ -4,6 +4,7 @@ import { Search, Grid, List, Upload, RefreshCw } from 'lucide-react'
 import { Header } from '@/components/Header'
 import { Sidebar } from '@/components/Sidebar'
 import { ContextCard } from '@/components/ContextCard'
+import { ContextViewer } from '@/components/ContextViewer'
 import { uploadsApi } from '@/utils/uploadsApi'
 import type { ContextFile, UserUploadedFile, UserUploadsResponse } from '@/types/context'
 import type { User } from '@/types/user'
@@ -25,6 +26,8 @@ export function MyContexts({ user, onLogout }: MyContextsProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [userUuid, setUserUuid] = useState<string>('')
+  const [selectedContext, setSelectedContext] = useState<ContextFile | null>(null)
+  const [isViewerOpen, setIsViewerOpen] = useState(false)
 
   // 将后端返回的文件转换为ContextFile格式
   const convertToContextFile = (uploadedFile: UserUploadedFile): ContextFile => {
@@ -116,6 +119,22 @@ export function MyContexts({ user, onLogout }: MyContextsProps) {
       console.error('删除文件失败:', err)
       alert(err instanceof Error ? err.message : '删除失败')
     }
+  }
+
+  const handleView = (context: ContextFile) => {
+    setSelectedContext(context)
+    setIsViewerOpen(true)
+  }
+
+  const handleCloseViewer = () => {
+    setIsViewerOpen(false)
+    setSelectedContext(null)
+  }
+
+  const handleSaveContext = async (updatedContext: ContextFile) => {
+    setContexts(prev => prev.map(ctx => 
+      ctx.id === updatedContext.id ? updatedContext : ctx
+    ))
   }
 
 
@@ -271,6 +290,7 @@ export function MyContexts({ user, onLogout }: MyContextsProps) {
                     context={context}
                     onDownload={handleDownload}
                     onDelete={handleDelete}
+                    onView={handleView}
                     originalFileName={uploadedFile?.original_name}
                   />
                 )
@@ -280,6 +300,14 @@ export function MyContexts({ user, onLogout }: MyContextsProps) {
         </main>
       </div>
 
+      {/* Context Viewer Modal */}
+      <ContextViewer
+        context={selectedContext}
+        isOpen={isViewerOpen}
+        onClose={handleCloseViewer}
+        onSave={handleSaveContext}
+        onDownload={handleDownload}
+      />
     </div>
   )
 }

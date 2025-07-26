@@ -672,18 +672,18 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
     </div>
   );
 
-  // 极简显示：只显示文件名和JSON文本
+  // 格式化显示：保持基本换行，但不使用文本框
   const renderStructuredSpecs = (specsFile: any) => {
     if (!specsFile) return <div className="text-gray-500">无分析结果</div>;
 
     return (
       <div className="space-y-3">
-        <div className="text-sm font-medium text-gray-700">JSON内容:</div>
-        <textarea
-          className="w-full h-96 p-3 border border-gray-300 rounded font-mono text-xs"
-          value={JSON.stringify(specsFile, null, 2)}
-          readOnly
-        />
+        <div className="text-sm font-medium text-gray-700">分析结果:</div>
+        <div className="w-full p-3 border border-gray-300 rounded bg-gray-50">
+          <pre className="font-mono text-xs text-gray-800 whitespace-pre-wrap overflow-x-auto">
+            {JSON.stringify(specsFile, null, 2)}
+          </pre>
+        </div>
       </div>
     );
   };

@@ -1,15 +1,16 @@
 import { useState } from 'react'
-import { FileText, Download, Share2, Trash2 } from 'lucide-react'
+import { FileText, Download, Share2, Trash2, Eye } from 'lucide-react'
 import type { ContextFile } from '@/types/context'
 
 interface ContextCardProps {
   context: ContextFile
   onDownload: (context: ContextFile) => void
   onDelete: (context: ContextFile) => void
+  onView: (context: ContextFile) => void
   originalFileName?: string
 }
 
-export function ContextCard({ context, onDownload, onDelete, originalFileName }: ContextCardProps) {
+export function ContextCard({ context, onDownload, onDelete, onView, originalFileName }: ContextCardProps) {
   const [showToast, setShowToast] = useState(false)
   
   const formatDate = (dateString: string) => {
@@ -133,6 +134,15 @@ export function ContextCard({ context, onDownload, onDelete, originalFileName }:
             更新于 {formatDate(context.updated_at)}
           </span>
           <div className="flex">
+            <button
+              onClick={() => onView(context)}
+              className="flex justify-center items-center w-8 h-8 hover:bg-green-50 rounded transition-colors"
+              title="查看详情"
+              style={{ color: 'rgba(34, 197, 94, 1)' }}
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+            
             <button
               onClick={() => onDownload(context)}
               className="flex justify-center items-center w-8 h-8 hover:bg-gray-100 rounded transition-colors"

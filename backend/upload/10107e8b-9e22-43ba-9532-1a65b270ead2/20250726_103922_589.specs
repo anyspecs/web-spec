@@ -1,0 +1,93 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "家教中介分成与激励机制设计",
+    "task_type": "chat_compression",
+    "createdAt": "2025-07-25T16:14:14.358Z",
+    "source_platform": "Gemini",
+    "analysis_model": "Gemini-1.5-pro"
+  },
+  "receiver_instructions": {
+    "context_understanding": "你正在与一位家教中介创业者讨论前端大学生兼职的薪酬模型。对方已确认：①每单信息费350元，两位合伙人平分；②目标群体为大学生，采用零底薪+提成；③实践转化率30%-50%；④最终采纳“有效微信30元 + 成单50元”的固定金额模式。当前任务是把这一模式清晰、有说服力地传达给潜在兼职大学生，并确保他们理解收益逻辑与高转化优势。",
+    "response_requirements": [
+      "用大学生易接受的语言包装岗位名称与机会",
+      "突出“回报快、不白干”与“高成功率”两大卖点",
+      "给出可复制的招募话术与三步沟通流程",
+      "提醒未来规模化时如何维持转化率",
+      "避免任何可能让对方觉得是画饼的表述"
+    ],
+    "mandatory_reply": "请继续对话，协助我将招募文案与培训SOP落地"
+  },
+  "chat_compression": {
+    "context_summary": {
+      "main_topic": "家教中介前端大学生兼职薪酬模型落地",
+      "current_task": "设计招募话术与培训SOP，把“30+50”模式高效传达给大学生",
+      "user_intent": "让潜在兼职者快速理解并加入，同时保障合伙人利润",
+      "conversation_stage": "方案已确定，进入招募与培训执行阶段"
+    },
+    "key_entities": {
+      "people": [
+        "大学生兼职",
+        "合伙人",
+        "家教代理",
+        "家长"
+      ],
+      "concepts": [
+        "30+50模型",
+        "有效微信",
+        "转化率30%-50%",
+        "零底薪+提成"
+      ],
+      "objects": [
+        "闲鱼账号",
+        "微信群",
+        "飞书表格",
+        "SOP文档"
+      ],
+      "time_references": [
+        "初创期",
+        "未来规模化"
+      ]
+    },
+    "decisions_made": [
+      {
+        "decision": "采用“有效微信30元+成单50元”固定金额模式",
+        "reasoning": "实践转化率30%-50%，单均利润可覆盖成本并留足合伙人收益",
+        "status": "已确认"
+      },
+      {
+        "decision": "岗位命名为“校园增长官”",
+        "reasoning": "大学生更易接受，突出成长与收益",
+        "status": "待执行"
+      }
+    ],
+    "pending_issues": [
+      {
+        "issue": "如何确保未来规模化后转化率不下滑",
+        "context": "当前高转化依赖创始人能力与高意向渠道",
+        "priority": "高"
+      },
+      {
+        "issue": "招募文案与培训SOP需尽快落地",
+        "context": "需要可复制的文档和话术",
+        "priority": "高"
+      }
+    ],
+    "resources_used": {
+      "tools": [
+        "飞书表格",
+        "微信群",
+        "闲鱼平台"
+      ],
+      "files": [
+        "家教中介SOP草稿"
+      ]
+    },
+    "context_restoration": {
+      "role_continuation": "继续扮演商业策略顾问，协助打磨招募与培训材料",
+      "conversation_tone": "务实、数据驱动、对大学生友好",
+      "knowledge_assumptions": "对方已掌握高转化打法，需转化为标准化流程",
+      "next_expected_action": "输出可直接使用的招募文案与培训大纲"
+    }
+  }
+}

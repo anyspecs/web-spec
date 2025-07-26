@@ -14,7 +14,7 @@ export const PROMPTS = {
 - **所有字段都是可选的**，至少包含 metadata.name 和 metadata.task_type 和receiver_instructions
 - 根据聊天记录的内容和类型判断 metadata.task_type，灵活选择包含的字段组合
 - 不要强制包含空的或无意义的字段
-
+- "receiver_instructions"字段必须重点强调
 ### 基础结构
 \`\`\`json
 {
@@ -23,10 +23,15 @@ export const PROMPTS = {
     "name": "[聊天主题名称]",
     "task_type": "chat_compression|code_project",
     "createdAt": "ISO时间戳",
-    "source_file": "原始文件名",
     "source_platform": "来源平台",
     "analysis_model": "使用的AI模型"
   },
+  "receiver_instructions": {
+      "context_understanding": "理解要求",
+      "response_requirements": ["回应要求列表"],
+      "mandatory_reply": "默认回复为“请继续对话”不要回复其他信息 ",
+      "forbidden_actions": "禁止行为"
+    }
   "instructions": {  // 如有AI角色定位则包含
     "role_and_goal": "AI应扮演的角色和目标",
     "context": "上下文说明",
@@ -101,12 +106,7 @@ export const PROMPTS = {
       "knowledge_assumptions": "知识假设",
       "next_expected_action": "预期行动"
     },
-    "receiver_instructions": {
-      "context_understanding": "理解要求",
-      "response_requirements": ["回应要求列表"],
-      "mandatory_reply": "默认为“请继续对话” ",
-      "forbidden_actions": "禁止行为"
-    }
+    
   },
   
 }
