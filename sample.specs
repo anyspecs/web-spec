@@ -1,0 +1,111 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "家教中介的商业模式与分成机制",
+    "task_type": "chat_compression",
+    "createdAt": "2025-07-26T03:46:24.084Z",
+    "source_file": "conversation_2025-07-25T16-14-08-382Z.md",
+    "processing_model": "aihubmix-compression"
+  },
+  "instructions": {},
+  "assets": {
+    "files": {}
+  },
+  "examples": [],
+  "history": [],
+  "compressed_context": {
+    "metadata": {
+      "original_length": 55,
+      "compression_time": "2023-10-10T12:00:00Z",
+      "context_version": "v1.0",
+      "priority_level": "高"
+    },
+    "context_summary": {
+      "main_topic": "家教中介的商业模式与分成机制",
+      "current_task": "讨论前端与后端的分成方案",
+      "user_intent": "设计合理的激励机制以提高前端人员积极性",
+      "conversation_stage": "进行中"
+    },
+    "key_entities": {
+      "people": [
+        "用户",
+        "Gemini"
+      ],
+      "concepts": [
+        "家教中介",
+        "分成机制",
+        "转化率"
+      ],
+      "objects": [
+        "微信",
+        "信息费",
+        "订单"
+      ],
+      "locations": [],
+      "time_references": []
+    },
+    "user_profile": {
+      "expertise_level": "中级",
+      "communication_style": "随意",
+      "preferences": [
+        "灵活的工作时间",
+        "高额提成"
+      ],
+      "constraints": [
+        "招募大学生"
+      ]
+    },
+    "decisions_made": [
+      {
+        "decision": "采用30元/微信 + 50元/成单的激励模式",
+        "reasoning": "基于高转化率的实践数据",
+        "status": "待执行"
+      }
+    ],
+    "pending_issues": [
+      {
+        "issue": "如何有效招募大学生",
+        "context": "需要设计吸引人的招募方案",
+        "priority": "高"
+      }
+    ],
+    "resources_used": {
+      "tools": [
+        "飞书",
+        "闲鱼"
+      ],
+      "files": [],
+      "external_refs": []
+    },
+    "conversation_flow": [
+      {
+        "stage": "讨论分成机制",
+        "key_exchange": "用户询问分成方案的合理性",
+        "outcome": "Gemini提供了详细的分成建议"
+      },
+      {
+        "stage": "确认激励模式",
+        "key_exchange": "用户决定采用30元/微信 + 50元/成单",
+        "outcome": "确认了激励机制"
+      }
+    ],
+    "context_restoration": {
+      "role_continuation": "AI应扮演商业顾问",
+      "conversation_tone": "专业",
+      "knowledge_assumptions": "用户了解家教中介的基本运作",
+      "next_expected_action": "用户将实施新的激励方案"
+    },
+    "receiver_instructions": {
+      "context_understanding": "基于以上记忆文件完全理解历史对话上下文和当前状态",
+      "response_requirements": [
+        "根据记忆文件信息准确回应用户后续问题",
+        "保持与原对话相同的专业水准和个性化程度",
+        "利用已建立的共识、决策和偏好来回应",
+        "优先处理待解决问题列表中的高优先级事项"
+      ],
+      "mandatory_reply": "收到此上下文记忆文件后，必须且仅回复：'请继续提问'",
+      "forbidden_actions": "不要返回其他任何内容或解释"
+    }
+  },
+  "raw_api_response": "{\n  \"metadata\": {\n    \"original_length\": 55,\n    \"compression_time\": \"2023-10-10T12:00:00Z\",\n    \"context_version\": \"v1.0\",\n    \"priority_level\": \"高\"\n  },\n  \"context_summary\": {\n    \"main_topic\": \"家教中介的商业模式与分成机制\",\n    \"current_task\": \"讨论前端与后端的分成方案\",\n    \"user_intent\": \"设计合理的激励机制以提高前端人员积极性\",\n    \"conversation_stage\": \"进行中\"\n  },\n  \"key_entities\": {\n    \"people\": [\"用户\", \"Gemini\"],\n    \"concepts\": [\"家教中介\", \"分成机制\", \"转化率\"],\n    \"objects\": [\"微信\", \"信息费\", \"订单\"],\n    \"locations\": [],\n    \"time_references\": []\n  },\n  \"user_profile\": {\n    \"expertise_level\": \"中级\",\n    \"communication_style\": \"随意\",\n    \"preferences\": [\"灵活的工作时间\", \"高额提成\"],\n    \"constraints\": [\"招募大学生\"]\n  },\n  \"decisions_made\": [\n    {\n      \"decision\": \"采用30元/微信 + 50元/成单的激励模式\",\n      \"reasoning\": \"基于高转化率的实践数据\",\n      \"status\": \"待执行\"\n    }\n  ],\n  \"pending_issues\": [\n    {\n      \"issue\": \"如何有效招募大学生\",\n      \"context\": \"需要设计吸引人的招募方案\",\n      \"priority\": \"高\"\n    }\n  ],\n  \"resources_used\": {\n    \"tools\": [\"飞书\", \"闲鱼\"],\n    \"files\": [],\n    \"external_refs\": []\n  },\n  \"conversation_flow\": [\n    {\n      \"stage\": \"讨论分成机制\",\n      \"key_exchange\": \"用户询问分成方案的合理性\",\n      \"outcome\": \"Gemini提供了详细的分成建议\"\n    },\n    {\n      \"stage\": \"确认激励模式\",\n      \"key_exchange\": \"用户决定采用30元/微信 + 50元/成单\",\n      \"outcome\": \"确认了激励机制\"\n    }\n  ],\n  \"context_restoration\": {\n    \"role_continuation\": \"AI应扮演商业顾问\",\n    \"conversation_tone\": \"专业\",\n    \"knowledge_assumptions\": \"用户了解家教中介的基本运作\",\n    \"next_expected_action\": \"用户将实施新的激励方案\"\n  },\n  \"receiver_instructions\": {\n    \"context_understanding\": \"基于以上记忆文件完全理解历史对话上下文和当前状态\",\n    \"response_requirements\": [\n      \"根据记忆文件信息准确回应用户后续问题\",\n      \"保持与原对话相同的专业水准和个性化程度\",\n      \"利用已建立的共识、决策和偏好来回应\",\n      \"优先处理待解决问题列表中的高优先级事项\"\n    ],\n    \"mandatory_reply\": \"收到此上下文记忆文件后，必须且仅回复：'请继续提问'\",\n    \"forbidden_actions\": \"不要返回其他任何内容或解释\"\n  }\n}"
+}
