@@ -19,6 +19,7 @@ from google.auth.transport import requests as google_requests
 from google_auth_oauthlib.flow import Flow
 import requests
 from werkzeug.utils import secure_filename
+import hashlib
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-in-production')
@@ -38,6 +39,27 @@ GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configura
 DATABASE = os.getenv('DATABASE_URL', 'database/web-spec.db')
 JWT_SECRET = os.getenv('JWT_SECRET', 'jwt-secret-change-in-production')
 JWT_EXPIRE_HOURS = int(os.getenv('JWT_EXPIRE_HOURS', '24'))
+
+# 上传配置
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'upload')
+MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+ALLOWED_EXTENSIONS = {'txt', 'json', 'specs', 'html', 'md', 'py', 'js', 'ts', 'tsx', 'jsx', 'css', 'xml', 'log'}
+
+# 确保上传目录存在
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+
+def allowed_file(filename):
+    """检查文件扩展名是否允许"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def get_user_upload_dir(user_uuid):
+    """获取用户的上传目录"""
+    user_dir = os.path.join(UPLOAD_FOLDER, user_uuid)
+    os.makedirs(user_dir, exist_ok=True)
+    return user_dir
 
 def init_db():
     """初始化数据库"""
@@ -508,6 +530,54 @@ def extension_validate():
                 'avatar': user['avatar_url']
             }
         })
+
+@app.route('/api/upload', methods=['POST'])
+@require_auth
+def upload_file():
+    """文件上传端点 (使用时间戳命名)"""
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': '没有选择文件'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': '没有选择文件'}), 400
+
+        # 获取当前用户信息
+        user_id = request.current_user['user_id']
+        with sqlite3.connect(DATABASE) as conn:
+            user_uuid = conn.execute('SELECT uuid FROM users WHERE id = ?', (user_id,)).fetchone()[0]
+            if not user_uuid:
+                return jsonify({'error': '用户不存在'}), 404
+        
+        original_filename = secure_filename(file.filename)
+        _, file_extension = os.path.splitext(original_filename)
+        
+        # 生成时间戳文件名 (YYYYMMDD_HHMMSS_ms)
+        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S_%f')[:-3]
+        new_filename = f"{timestamp}{file_extension}"
+        
+        # 获取用户上传目录并保存
+        user_upload_dir = get_user_upload_dir(user_uuid)
+        file_path = os.path.join(user_upload_dir, new_filename)
+        file.save(file_path)
+
+        return jsonify({
+            'success': True,
+            'message': '文件上传成功',
+            'file_info': {
+                'original_name': original_filename,
+                'saved_name': new_filename,
+                'timestamp': timestamp,
+                'size': os.path.getsize(file_path),
+                'user_uuid': user_uuid,
+                'storage_path': f"upload/{user_uuid}/{new_filename}"
+            }
+        })
+        
+    except Exception as e:
+        app.logger.error(f"文件上传错误: {str(e)}")
+        return jsonify({'error': f'上传失败: {str(e)}'}), 500
 
 @app.route('/health', methods=['GET'])
 def health_check():

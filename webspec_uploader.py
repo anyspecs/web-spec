@@ -143,23 +143,25 @@ class WebSpecUploader:
             print(f"File not found: {file_path}")
             return
 
-        with open(file_path, 'rb') as f:
-            content = f.read()
-        
-        hash_id = hashlib.sha256(content).hexdigest()
         filename = os.path.basename(file_path)
-        
-        print(f"Uploading '{filename}' (hash: {hash_id[:12]}...).")
-        
-        files = {'file': (f"{hash_id}.json", content, 'application/json')}
-        data = self._api_request("post", "/api/upload", files=files)
-        
-        if data and data.get('success'):
-            info = data.get('file_info', {})
-            print(f"✔ Upload successful!")
-            print(f"  -> Stored at: {info.get('storage_path')}")
-        else:
-            print("Upload failed.")
+        print(f"Uploading '{filename}'...")
+
+        try:
+            with open(file_path, 'rb') as f:
+                # The server will handle naming, we just send the file
+                files = {'file': (filename, f, 'application/octet-stream')}
+                data = self._api_request("post", "/api/upload", files=files)
+            
+            if data and data.get('success'):
+                info = data.get('file_info', {})
+                print(f"✔ Upload successful!")
+                print(f"  -> Original Name: {info.get('original_name')}")
+                print(f"  -> Saved Name: {info.get('saved_name')}")
+                print(f"  -> Stored at: {info.get('storage_path')}")
+            else:
+                print("Upload failed.")
+        except Exception as e:
+            print(f"An error occurred during upload: {e}")
 
     def run(self, args):
         if args.reset:
