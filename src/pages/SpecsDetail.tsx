@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Share2, Download, ChevronDown, ChevronRight, FileText, MessageSquare, User, Bot } from 'lucide-react'
-import { cn } from '@/utils/cn'
+
 import { uploadsApi } from '@/utils/uploadsApi'
 import type { User as UserType } from '@/types/context'
 
@@ -134,12 +134,7 @@ export default function SpecsDetail({ user, onLogout }: SpecsDetailProps) {
     fetchSpecsData()
   }, [filename, location.state])
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }))
-  }
+
 
   const handleCopyUrl = async () => {
     try {

@@ -1,0 +1,138 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "聊天记录压缩",
+    "task_type": "chat_compression",
+    "createdAt": "2025-07-26T08:18:24.028Z",
+    "source_file": "conversation_2025-07-25T16-14-14-358Z.md"
+  },
+  "compressed_context": {
+    "version": "1.0",
+    "metadata": {
+      "name": "家教中介商业模式讨论",
+      "task_type": "general_chat",
+      "createdAt": "2025-07-25T16:14:14Z",
+      "source_file": "conversation_2025-07-25T16-14-14-358Z.md",
+      "source_platform": "Gemini"
+    },
+    "instructions": {
+      "role_and_goal": "讨论家教中介的商业模式和分成机制",
+      "context": "用户与AI讨论家教中介的前端、后端分工及收益模式",
+      "key_topics": [
+        "基本分工",
+        "利润分成",
+        "合同约束",
+        "管理流程",
+        "知识共享"
+      ]
+    },
+    "examples": [
+      {
+        "role": "user",
+        "content": "你觉得家教中介的前端后端和我们两个人之间的具体分成需要是什么样子的?",
+        "timestamp": "2025-07-25T16:14:14Z"
+      },
+      {
+        "role": "assistant",
+        "content": "好的，这是一个非常核心的问题。一个合理的分成结构能够激励所有参与方，并确保商业模式的健康运转。",
+        "timestamp": "2025-07-25T16:14:14Z"
+      },
+      {
+        "role": "user",
+        "content": "收益模式30+50够吗? 按你说的还是成单之后给信息费的一定的比例。",
+        "timestamp": "2025-07-25T16:14:14Z"
+      },
+      {
+        "role": "assistant",
+        "content": "这是一个关键的战略选择。我们来对比一下优劣：固定金额模式和按比例模式。",
+        "timestamp": "2025-07-25T16:14:14Z"
+      }
+    ],
+    "compressed_context": {
+      "context_summary": {
+        "main_topic": "家教中介商业模式",
+        "current_task": "讨论分成机制",
+        "user_intent": "寻求合理的分成方案",
+        "conversation_stage": "分成机制讨论"
+      },
+      "key_entities": {
+        "people": [
+          "用户",
+          "AI助手"
+        ],
+        "concepts": [
+          "家教中介",
+          "分成机制",
+          "利润分配"
+        ],
+        "objects": [
+          "有效微信",
+          "订单"
+        ],
+        "locations": [],
+        "time_references": [
+          "2025年7月25日"
+        ]
+      },
+      "user_profile": {
+        "expertise_level": "初创企业主",
+        "communication_style": "直接",
+        "preferences": [
+          "高效激励机制",
+          "简单透明的收益模式"
+        ],
+        "constraints": []
+      },
+      "decisions_made": [
+        {
+          "decision": "采用30+50的分成模型",
+          "reasoning": "基于高转化率的实践数据",
+          "status": "待实施"
+        }
+      ],
+      "pending_issues": [],
+      "resources_used": {
+        "tools": [
+          "闲鱼",
+          "飞书"
+        ],
+        "files": [],
+        "external_refs": []
+      },
+      "conversation_flow": [
+        {
+          "stage": "分成机制讨论",
+          "key_exchange": "讨论家教中介的收益模式",
+          "outcome": "确定采用30+50的分成模型"
+        }
+      ],
+      "context_restoration": {
+        "role_continuation": "用户与AI助手继续讨论分成机制",
+        "conversation_tone": "专业且友好",
+        "knowledge_assumptions": "用户对家教中介有一定了解",
+        "next_expected_action": "用户实施分成模型"
+      },
+      "receiver_instructions": {
+        "context_understanding": "理解家教中介的商业模式",
+        "response_requirements": [
+          "提供反馈",
+          "讨论实施细节"
+        ],
+        "mandatory_reply": "确认分成模型的可行性",
+        "forbidden_actions": "忽视用户的具体需求"
+      }
+    },
+    "receiver_instructions": {
+      "context_understanding": "请仔细阅读上述压缩的上下文信息，理解当前的对话状态、用户需求和项目背景。",
+      "response_requirements": [
+        "基于上下文保持角色一致性",
+        "参考用户画像调整沟通风格",
+        "关注待解决问题并提供帮助",
+        "遵循已确定的决策和约束条件"
+      ],
+      "mandatory_reply": "我已理解上述上下文信息，将基于这些信息继续为您提供帮助。有什么我可以协助您的吗？",
+      "forbidden_actions": "不要忽略上下文中的重要信息，不要改变已建立的角色设定，不要重复解决已完成的问题。"
+    }
+  },
+  "raw_api_response": "{\n  \"version\": \"1.0\",\n  \"metadata\": {\n    \"name\": \"家教中介商业模式讨论\",\n    \"task_type\": \"general_chat\",\n    \"createdAt\": \"2025-07-25T16:14:14Z\",\n    \"source_file\": \"conversation_2025-07-25T16-14-14-358Z.md\",\n    \"source_platform\": \"Gemini\"\n  },\n  \"instructions\": {\n    \"role_and_goal\": \"讨论家教中介的商业模式和分成机制\",\n    \"context\": \"用户与AI讨论家教中介的前端、后端分工及收益模式\",\n    \"key_topics\": [\n      \"基本分工\",\n      \"利润分成\",\n      \"合同约束\",\n      \"管理流程\",\n      \"知识共享\"\n    ]\n  },\n  \"examples\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"你觉得家教中介的前端后端和我们两个人之间的具体分成需要是什么样子的?\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"好的，这是一个非常核心的问题。一个合理的分成结构能够激励所有参与方，并确保商业模式的健康运转。\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"收益模式30+50够吗? 按你说的还是成单之后给信息费的一定的比例。\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"这是一个关键的战略选择。我们来对比一下优劣：固定金额模式和按比例模式。\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    }\n  ],\n  \"compressed_context\": {\n    \"context_summary\": {\n      \"main_topic\": \"家教中介商业模式\",\n      \"current_task\": \"讨论分成机制\",\n      \"user_intent\": \"寻求合理的分成方案\",\n      \"conversation_stage\": \"分成机制讨论\"\n    },\n    \"key_entities\": {\n      \"people\": [\"用户\", \"AI助手\"],\n      \"concepts\": [\"家教中介\", \"分成机制\", \"利润分配\"],\n      \"objects\": [\"有效微信\", \"订单\"],\n      \"locations\": [],\n      \"time_references\": [\"2025年7月25日\"]\n    },\n    \"user_profile\": {\n      \"expertise_level\": \"初创企业主\",\n      \"communication_style\": \"直接\",\n      \"preferences\": [\"高效激励机制\", \"简单透明的收益模式\"],\n      \"constraints\": []\n    },\n    \"decisions_made\": [\n      {\n        \"decision\": \"采用30+50的分成模型\",\n        \"reasoning\": \"基于高转化率的实践数据\",\n        \"status\": \"待实施\"\n      }\n    ],\n    \"pending_issues\": [],\n    \"resources_used\": {\n      \"tools\": [\"闲鱼\", \"飞书\"],\n      \"files\": [],\n      \"external_refs\": []\n    },\n    \"conversation_flow\": [\n      {\n        \"stage\": \"分成机制讨论\",\n        \"key_exchange\": \"讨论家教中介的收益模式\",\n        \"outcome\": \"确定采用30+50的分成模型\"\n      }\n    ],\n    \"context_restoration\": {\n      \"role_continuation\": \"用户与AI助手继续讨论分成机制\",\n      \"conversation_tone\": \"专业且友好\",\n      \"knowledge_assumptions\": \"用户对家教中介有一定了解\",\n      \"next_expected_action\": \"用户实施分成模型\"\n    },\n    \"receiver_instructions\": {\n      \"context_understanding\": \"理解家教中介的商业模式\",\n      \"response_requirements\": [\"提供反馈\", \"讨论实施细节\"],\n      \"mandatory_reply\": \"确认分成模型的可行性\",\n      \"forbidden_actions\": \"忽视用户的具体需求\"\n    }\n  }\n}"
+}

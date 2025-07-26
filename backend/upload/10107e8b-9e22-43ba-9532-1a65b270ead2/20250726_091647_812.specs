@@ -1,0 +1,105 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "家教中介商业模式讨论",
+    "task_type": "chat_compression",
+    "createdAt": "2025-07-25T16:14:14Z",
+    "source_file": "conversation_2025-07-25T16-14-14-358Z.md",
+    "source_platform": "Gemini"
+  },
+  "instructions": {
+    "role_and_goal": "AI应扮演商业顾问，提供家教中介的分成模型建议",
+    "context": "讨论家教中介的前端后端分工及利润分成",
+    "key_topics": [
+      "家教中介分工",
+      "利润分成",
+      "激励机制"
+    ]
+  },
+  "chat_compression": {
+    "context_summary": {
+      "main_topic": "家教中介的商业模式与分成机制",
+      "current_task": "讨论前端后端的具体分成方案",
+      "user_intent": "希望找到激励前端人员的有效方案",
+      "conversation_stage": "讨论具体的收益模型"
+    },
+    "key_entities": {
+      "people": [
+        "用户",
+        "Gemini"
+      ],
+      "concepts": [
+        "家教中介",
+        "利润分成",
+        "激励机制"
+      ],
+      "objects": [
+        "微信",
+        "订单",
+        "有效客户"
+      ],
+      "locations": [
+        "闲鱼"
+      ],
+      "time_references": [
+        "2025年"
+      ]
+    },
+    "user_profile": {
+      "expertise_level": "初创企业主",
+      "communication_style": "直接且务实",
+      "preferences": [
+        "高效激励",
+        "透明分成"
+      ],
+      "constraints": [
+        "控制成本",
+        "提高转化率"
+      ]
+    },
+    "decisions_made": [
+      {
+        "decision": "采用30元/微信 + 50元/成单的分成模式",
+        "reasoning": "基于高转化率的实践数据",
+        "status": "待实施"
+      }
+    ],
+    "pending_issues": [
+      {
+        "issue": "如何确保新招募的大学生能保持高转化率",
+        "context": "随着团队扩展，转化率可能下降",
+        "priority": "高"
+      }
+    ],
+    "resources_used": {
+      "tools": [
+        "闲鱼",
+        "飞书"
+      ],
+      "files": [],
+      "external_refs": []
+    },
+    "conversation_flow": [
+      {
+        "stage": "讨论分成模型",
+        "key_exchange": "用户询问分成方案",
+        "outcome": "确定采用30元/微信 + 50元/成单"
+      }
+    ],
+    "context_restoration": {
+      "role_continuation": "商业顾问",
+      "conversation_tone": "专业且友好",
+      "knowledge_assumptions": "用户对家教中介有基本了解",
+      "next_expected_action": "实施新的分成方案并监测效果"
+    },
+    "receiver_instructions": {
+      "context_understanding": "理解家教中介的商业模式",
+      "response_requirements": [
+        "提供反馈",
+        "提出问题"
+      ],
+      "mandatory_reply": "请继续对话",
+      "forbidden_actions": "不允许忽视用户需求"
+    }
+  }
+}

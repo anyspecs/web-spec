@@ -1,0 +1,140 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "家教中介商业模式讨论",
+    "task_type": "general_chat",
+    "createdAt": "2025-07-25T16:14:08Z",
+    "source_file": "conversation_2025-07-25T16-14-08-382Z.md",
+    "source_platform": "Gemini",
+    "analysis_model": "GPT-4"
+  },
+  "instructions": {
+    "role_and_goal": "AI作为商业顾问，提供家教中介的商业模式建议。",
+    "context": "用户与AI讨论家教中介的分工、利润分成及激励机制。",
+    "key_topics": [
+      "家教中介分工",
+      "利润分成",
+      "激励机制",
+      "转化率"
+    ]
+  },
+  "examples": [
+    {
+      "role": "user",
+      "content": "这个是基本的模式 然后 现在需要讨论的几个要点: 基本分工——成员之间的相互约束 具体的利润分成 合同约束 具体管理和流程 知识共享部分(基本操作流程 商业SOP",
+      "timestamp": "2025-07-25T16:14:08Z"
+    },
+    {
+      "role": "assistant",
+      "content": "好的，我已仔细阅读您提供的商业模式图和补充说明。这是一个非常清晰的早期创业模型，现在我们来逐一探讨您提出的几个要点和问题。",
+      "timestamp": "2025-07-25T16:15:00Z"
+    },
+    {
+      "role": "user",
+      "content": "你觉得家教中介的前端后端和我们两个人之间的具体分成需要是什么样子的?",
+      "timestamp": "2025-07-25T16:30:00Z"
+    },
+    {
+      "role": "assistant",
+      "content": "好的，这是一个非常核心的问题。一个合理的分成结构能够激励所有参与方，并确保商业模式的健康运转。",
+      "timestamp": "2025-07-25T16:31:00Z"
+    },
+    {
+      "role": "user",
+      "content": "收益模式30+50够吗? 按你说的还是成单之后给信息费的一定的比例。",
+      "timestamp": "2025-07-25T16:45:00Z"
+    },
+    {
+      "role": "assistant",
+      "content": "这是一个关键的战略选择。我们来对比一下优劣：固定金额模式和按比例模式。",
+      "timestamp": "2025-07-25T16:46:00Z"
+    },
+    {
+      "role": "user",
+      "content": "转化率有这么低吗? 为什么我的实践下来转化率30~50是有的?",
+      "timestamp": "2025-07-25T17:00:00Z"
+    },
+    {
+      "role": "assistant",
+      "content": "如果您的实践数据能稳定达到30%~50%的转化率，那首先要恭喜您，这说明您的业务前端有很强的优势。",
+      "timestamp": "2025-07-25T17:01:00Z"
+    },
+    {
+      "role": "user",
+      "content": "我要怎么和别人说这个30+50的模型，他更能接受。",
+      "timestamp": "2025-07-25T17:15:00Z"
+    },
+    {
+      "role": "assistant",
+      "content": "当然，要把这个模式说得让大学生欣然接受，关键在于清晰、有吸引力，并且能打消他们的顾虑。",
+      "timestamp": "2025-07-25T17:16:00Z"
+    }
+  ],
+  "compressed_context": {
+    "context_summary": {
+      "main_topic": "家教中介商业模式",
+      "current_task": "讨论利润分成和激励机制",
+      "user_intent": "寻找合理的分成方案",
+      "conversation_stage": "模型讨论与优化"
+    },
+    "key_entities": {
+      "people": [
+        "用户",
+        "AI助手"
+      ],
+      "concepts": [
+        "家教中介",
+        "利润分成",
+        "转化率",
+        "激励机制"
+      ],
+      "objects": [
+        "微信",
+        "订单"
+      ],
+      "locations": [],
+      "time_references": []
+    },
+    "user_profile": {
+      "expertise_level": "初创企业主",
+      "communication_style": "直接",
+      "preferences": [
+        "高效激励",
+        "透明分成"
+      ],
+      "constraints": []
+    },
+    "decisions_made": [
+      {
+        "decision": "采用30元/微信 + 50元/成单的激励模式",
+        "reasoning": "基于高转化率和市场需求",
+        "status": "待实施"
+      }
+    ],
+    "pending_issues": [],
+    "resources_used": {
+      "tools": [],
+      "files": [],
+      "external_refs": []
+    },
+    "conversation_flow": [
+      {
+        "stage": "商业模式讨论",
+        "key_exchange": "用户询问分成方案",
+        "outcome": "确定采用30+50模型"
+      }
+    ],
+    "context_restoration": {
+      "role_continuation": "用户与AI助手的商业咨询关系",
+      "conversation_tone": "专业且友好",
+      "knowledge_assumptions": "用户对家教市场有一定了解",
+      "next_expected_action": "用户准备招募大学生"
+    },
+    "receiver_instructions": {
+      "context_understanding": "理解家教中介的商业模式",
+      "response_requirements": [],
+      "mandatory_reply": "",
+      "forbidden_actions": ""
+    }
+  }
+}
