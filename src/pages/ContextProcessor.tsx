@@ -530,26 +530,13 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
                       }
 
                       // 跳转到specs详情页面，通过state传递数据
-                      const encodedFileName = encodeURIComponent(
-                        firstFile.result.specsFileName
-                      );
-                      const specsDetailUrl = `/specs-detail/${encodedFileName}`;
-
-                      // 复制完整URL到剪贴板
-                      const fullUrl = `${window.location.origin}${specsDetailUrl}`;
-                      await navigator.clipboard.writeText(fullUrl);
+                      // 直接复制specs文件的JSON内容到剪贴板
+                      const specsContent = JSON.stringify(firstFile.result?.specsFile, null, 2);
+                      await navigator.clipboard.writeText(specsContent);
 
                       // 显示成功提示
                       setShowToast(true);
                       setTimeout(() => setShowToast(false), 3000);
-
-                      // 通过state传递specs数据到SpecsDetail页面
-                      navigate(specsDetailUrl, {
-                        state: {
-                          specsData: firstFile.result.specsFile,
-                          isLocalData: true, // 标识这是本地数据，不需要从后端获取
-                        },
-                      });
                     } catch (error) {
                       console.error("应用失败:", error);
                       alert("应用失败，请重试");
@@ -870,10 +857,19 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
 
   return (
     <div className="w-full min-h-screen bg-gray-50">
-      {/* Toast 通知 */}
+      {/* 居中弹窗提示 */}
       {showToast && (
-        <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
-          已复制到剪切板，发给别的ai吧～
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm mx-4">
+            <div className="text-center">
+              <div className="text-lg font-medium text-gray-900 mb-2">
+                复制成功！
+              </div>
+              <div className="text-sm text-gray-600">
+                复制到粘贴板了，发给其他ai无缝衔接吧～
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

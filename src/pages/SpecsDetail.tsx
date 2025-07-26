@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Share2, Download, ChevronDown, ChevronRight, FileText, MessageSquare, User, Bot } from 'lucide-react'
-
+import { useParams, useLocation } from 'react-router-dom'
 import { uploadsApi } from '@/utils/uploadsApi'
 import type { User as UserType } from '@/types/context'
 
@@ -50,19 +48,10 @@ interface SpecsData {
 
 export default function SpecsDetail({ user, onLogout }: SpecsDetailProps) {
   const { filename } = useParams<{ filename: string }>()
-  const navigate = useNavigate()
   const location = useLocation()
   const [specsData, setSpecsData] = useState<SpecsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [showToast, setShowToast] = useState(false)
-  
-  const [expandedSections, setExpandedSections] = useState({
-    metadata: true,
-    instructions: true,
-    assets: true,
-    history: true
-  })
 
   useEffect(() => {
     const fetchSpecsData = async () => {
@@ -136,125 +125,23 @@ export default function SpecsDetail({ user, onLogout }: SpecsDetailProps) {
 
 
 
-  const handleCopyUrl = async () => {
-    try {
-      const currentUrl = window.location.href
-      await navigator.clipboard.writeText(currentUrl)
-      setShowToast(true)
-      setTimeout(() => setShowToast(false), 3000)
-    } catch (err) {
-      console.error('复制URL失败:', err)
-    }
-  }
-
-  const handleDownload = () => {
-    if (specsData && filename) {
-      const blob = new Blob([JSON.stringify(specsData, null, 2)], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = filename
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    }
-  }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">加载中...</p>
-        </div>
-      </div>
-    )
+    return <div>加载中...</div>
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={() => navigate('/')}
-            className="btn btn-primary"
-          >
-            返回主页
-          </button>
-        </div>
-      </div>
-    )
+    return <div>错误: {error}</div>
   }
 
   if (!specsData) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">文件数据不可用</p>
-        </div>
-      </div>
-    )
+    return <div>文件数据不可用</div>
   }
 
+  // 只显示纯JSON文本
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Toast 通知 */}
-      {showToast && (
-        <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
-          已复制到剪切板，发给别的ai吧～
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <button
-              onClick={() => navigate('/')}
-              className="btn btn-secondary btn-sm mr-4"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              返回
-            </button>
-            <h1 className="text-xl font-semibold text-gray-900 truncate">
-              {filename}
-            </h1>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={handleCopyUrl}
-              className="btn btn-secondary btn-sm"
-            >
-              <Share2 className="w-4 h-4 mr-2" />
-              应用
-            </button>
-            <button
-              onClick={handleDownload}
-              className="btn btn-primary btn-sm"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              下载
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-full mx-auto py-8 px-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6">
-            {/* 完整JSON内容 */}
-            <div className="bg-gray-50 rounded-lg p-6 border">
-              <pre className="text-sm text-gray-800 whitespace-pre-wrap overflow-auto font-mono">
-                {JSON.stringify(specsData, null, 2)}
-              </pre>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <pre style={{ margin: 0, padding: 0, fontFamily: 'monospace', fontSize: '14px' }}>
+      {JSON.stringify(specsData, null, 2)}
+    </pre>
   )
 }
