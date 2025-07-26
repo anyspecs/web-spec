@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { processFileWithAihubmix } from "@/service/aihubmix";
+import { LoadingDots } from "@/components/LoadingDots";
 import {
   parseApiResponseToSpecs,
   downloadSpecsFile,
@@ -233,13 +234,15 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
         );
 
         const fileName = files[i]?.name || "未知文件";
-        
+
         // 1. 获取原始API响应
         const apiResult = await processFileWithAihubmix(files[i].file);
-        
         // 2. 解析API响应为specs格式
-        const specsResult = parseApiResponseToSpecs(apiResult.rawResponse, fileName);
-        
+        const specsResult = parseApiResponseToSpecs(
+          apiResult.rawResponse,
+          fileName
+        );
+
         // 3. 创建处理结果
         const result: SpecsProcessingResult = {
           summary: specsResult.summary,
@@ -471,7 +474,7 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
 
         {currentStep === "process" && (
           <>
-            <Loader className="w-16 h-16 mx-auto mb-4 text-blue-500 animate-spin" />
+            <LoadingDots size="lg" className="mx-auto mb-4" />
             <p className="text-sm" style={{ color: "rgba(136, 138, 139, 1)" }}>
               AI正在分析和总结您的文件内容
             </p>
@@ -531,7 +534,11 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
 
                       // 跳转到specs详情页面，通过state传递数据
                       // 直接复制specs文件的JSON内容到剪贴板
-                      const specsContent = JSON.stringify(firstFile.result?.specsFile, null, 2);
+                      const specsContent = JSON.stringify(
+                        firstFile.result?.specsFile,
+                        null,
+                        2
+                      );
                       await navigator.clipboard.writeText(specsContent);
 
                       // 显示成功提示
@@ -717,14 +724,14 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
                 </div>
                 <div className="flex items-center space-x-2">
                   {file.processingState === "generating" && (
-                    <span className="flex items-center text-xs text-blue-600">
-                      <Loader className="w-3 h-3 mr-1 animate-spin" />
+                    <span className="flex items-center text-xs text-gray-600">
+                      <LoadingDots size="sm" className="mr-1" />
                       生成中...
                     </span>
                   )}
                   {file.processingState === "processing" && (
-                    <span className="flex items-center text-xs text-blue-600">
-                      <Clock className="w-3 h-3 mr-1" />
+                    <span className="flex items-center text-xs text-gray-600">
+                      <LoadingDots size="sm" className="mr-1" />
                       处理中...
                     </span>
                   )}
