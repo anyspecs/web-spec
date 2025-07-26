@@ -29,6 +29,7 @@ export function generateSpecsFileName(
 
 /**
  * 从ContextAnalysisResult生成完整的SpecsFile
+ * 调试模式：如果contextAnalysis包含raw_response，则生成纯文本specs
  */
 export function generateSpecsFile(
   originalFileName: string,
@@ -37,28 +38,80 @@ export function generateSpecsFile(
 ): SpecsFile {
   const now = new Date().toISOString();
 
+  // 检查是否为新的聊天压缩格式
+  if ((contextAnalysis as any).compressed_context) {
+    const specsFile: SpecsFile = {
+      version: "1.0",
+      metadata: {
+        name: contextAnalysis.metadata?.name || originalFileName,
+        task_type: "chat_compression",
+        createdAt: now,
+        source_file: originalFileName,
+        processing_model: "aihubmix-compression",
+      },
+      instructions: {},
+      assets: {
+        files: {},
+      },
+      examples: [],
+      history: [],
+      // 存储压缩后的聊天数据
+      compressed_context: (contextAnalysis as any).compressed_context,
+      // 同时保留原始响应用于调试
+      raw_api_response: (contextAnalysis as any).raw_response
+    };
+
+    return specsFile;
+  }
+
+  // 检查是否为调试模式（包含raw_response但没有compressed_context）
+  if ((contextAnalysis as any).raw_response) {
+    const specsFile: SpecsFile = {
+      version: "1.0",
+      metadata: {
+        name: `${originalFileName}_调试模式`,
+        task_type: "debug",
+        createdAt: now,
+        source_file: originalFileName,
+        processing_model: "aihubmix-debug",
+      },
+      instructions: {},
+      assets: {
+        files: {},
+      },
+      examples: [],
+      history: [],
+      // 将原始响应作为纯文本存储
+      raw_api_response: (contextAnalysis as any).raw_response
+    };
+
+    return specsFile;
+  }
+
+  // 正常模式：使用标准JSON结构（暂时注释掉复杂逻辑）
   const specsFile: SpecsFile = {
     version: "1.0",
     metadata: {
-      name: contextAnalysis.metadata.name,
-      task_type: contextAnalysis.metadata.task_type,
+      name: contextAnalysis.metadata?.name || originalFileName,
+      task_type: contextAnalysis.metadata?.task_type || "unknown",
       createdAt: now,
       source_file: options.includeSourceFile ? originalFileName : undefined,
-      processing_model: "kimi-k2-0711-preview",
+      processing_model: "aihubmix",
     },
     instructions: {
-      role_and_goal: contextAnalysis.instructions.role_and_goal,
+      // role_and_goal: contextAnalysis.instructions?.role_and_goal || "", // 注释掉
     },
     assets: {
-      files: contextAnalysis.assets.files,
+      files: contextAnalysis.assets?.files || {}, // 注释掉复杂逻辑
     },
     examples: contextAnalysis.examples || [],
-    history: contextAnalysis.history.map((item) => ({
-      role: item.role,
-      content: item.content,
-      timestamp: item.timestamp,
-      metadata: item.metadata,
-    })),
+    history: contextAnalysis.history || [],
+    // history: contextAnalysis.history?.map((item) => ({
+    //   role: item.role,
+    //   content: item.content,
+    //   timestamp: item.timestamp,
+    //   metadata: item.metadata,
+    // })) || [], // 注释掉复杂映射
   };
 
   return specsFile;

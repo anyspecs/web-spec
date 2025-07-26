@@ -304,7 +304,7 @@ export interface ProcessingFile extends UploadFile {
 
 #### API密钥安全
 - 当前直接在代码中配置，生产环境需要使用环境变量
-- 建议创建 `.env.local` 文件管理敏感信息
+- 建议创建 `.env` 文件管理敏感信息
 
 #### 性能考虑
 - 大文件上传需要分块处理

@@ -35,19 +35,84 @@ export interface SpecsFile {
   version: string
   metadata: {
     name: string
-    task_type: 'general_chat' | 'document_analysis' | 'code_project'
+    task_type: 'general_chat' | 'document_analysis' | 'code_project' | 'debug' | 'chat_compression'
     createdAt: string
     source_file?: string
     processing_model?: string
   }
   instructions: {
-    role_and_goal: string
+    role_and_goal?: string  // 调试模式下可选
   }
   assets: {
     files: Record<string, FileAsset>  // 文件路径 -> FileAsset
   }
   examples?: ExampleItem[]
   history: HistoryItem[]
+  // 新格式：聊天压缩数据
+  compressed_context?: ChatCompressionResult
+  // 调试模式下的原始API响应
+  raw_api_response?: string
+}
+
+// 基于新提示词格式的压缩结果接口
+export interface ChatCompressionResult {
+  metadata: {
+    original_length: number
+    compression_time: string
+    context_version: string
+    priority_level: '高' | '中' | '低'
+  }
+  context_summary: {
+    main_topic: string
+    current_task: string
+    user_intent: string
+    conversation_stage: '开始' | '进行中' | '接近完成'
+  }
+  key_entities: {
+    people: string[]
+    concepts: string[]
+    objects: string[]
+    locations: string[]
+    time_references: string[]
+  }
+  user_profile: {
+    expertise_level: '新手' | '中级' | '专家'
+    communication_style: '正式' | '随意' | '技术性'
+    preferences: string[]
+    constraints: string[]
+  }
+  decisions_made: Array<{
+    decision: string
+    reasoning: string
+    status: string
+  }>
+  pending_issues: Array<{
+    issue: string
+    context: string
+    priority: string
+  }>
+  resources_used: {
+    tools: string[]
+    files: string[]
+    external_refs: string[]
+  }
+  conversation_flow: Array<{
+    stage: string
+    key_exchange: string
+    outcome: string
+  }>
+  context_restoration: {
+    role_continuation: string
+    conversation_tone: string
+    knowledge_assumptions: string
+    next_expected_action: string
+  }
+  receiver_instructions: {
+    context_understanding: string
+    response_requirements: string[]
+    mandatory_reply: string
+    forbidden_actions: string
+  }
 }
 
 // 用于API分析结果的接口

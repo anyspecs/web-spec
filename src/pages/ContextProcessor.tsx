@@ -14,10 +14,10 @@ import {
   Clock,
   Copy,
   Save,
- 
+  RotateCcw,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { processFileWithKimi } from "@/service/kimiApi";
+import { processFileWithAihubmix } from "@/service/aihubmix";
 import {
   generateSpecsFile,
   downloadSpecsFile,
@@ -31,7 +31,6 @@ import type {
   SpecsProcessingResult,
 } from "@/types/context";
 import type { User } from "@/types/user";
-import type { SpecsFile } from "@/types/specs";
 
 // 支持的文件格式配置
 const SUPPORTED_FILE_FORMATS = {
@@ -80,66 +79,66 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
   const [currentStep, setCurrentStep] = useState<
     "upload" | "process" | "complete"
   >("upload");
-  const [processingProgress, setProcessingProgress] = useState(0);
+  // const [processingProgress, setProcessingProgress] = useState(0);
 
-  // 插件数据模拟文件上传函数
-  const simulateFileUpload = useCallback((content: string, filename: string, platform?: string) => {
-    if (!content || !filename) {
-      console.error('插件数据缺少必要信息')
-      return
-    }
+  // // 插件数据模拟文件上传函数
+  // const simulateFileUpload = useCallback((content: string, filename: string, platform?: string) => {
+  //   if (!content || !filename) {
+  //     console.error('插件数据缺少必要信息')
+  //     return
+  //   }
 
-    // 检查文件格式是否支持
-    if (!isFileSupported(filename)) {
-      console.error('不支持的文件格式:', filename)
-      return
-    }
+  //   // 检查文件格式是否支持
+  //   if (!isFileSupported(filename)) {
+  //     console.error('不支持的文件格式:', filename)
+  //     return
+  //   }
 
-    // 创建File对象
-    const blob = new Blob([content], { type: 'text/plain' })
-    const file = new File([blob], filename, { type: 'text/plain' })
+  //   // 创建File对象
+  //   const blob = new Blob([content], { type: 'text/plain' })
+  //   const file = new File([blob], filename, { type: 'text/plain' })
     
-    const newUploadFile: UploadFile = {
-      file,
-      name: filename,
-      size: `${(file.size / 1024).toFixed(1)} KB`,
-      status: 'uploading'
-    }
+  //   const newUploadFile: UploadFile = {
+  //     file,
+  //     name: filename,
+  //     size: `${(file.size / 1024).toFixed(1)} KB`,
+  //     status: 'uploading'
+  //   }
     
-    // 添加到上传队列，就像用户手动上传一样
-    setUploadFiles(prev => [...prev, newUploadFile])
+  //   // 添加到上传队列，就像用户手动上传一样
+  //   setUploadFiles(prev => [...prev, newUploadFile])
     
-    console.log(`插件文件已添加: ${filename} (${platform || '未知平台'})`)
-  }, [])
+  //   console.log(`插件文件已添加: ${filename} (${platform || '未知平台'})`)
+  // }, [])
 
-  // 监听插件消息
-  useEffect(() => {
-    const handlePluginMessage = (event: MessageEvent) => {
-      console.log('🔌 收到消息:', event.data)
+  // // 监听插件消息
+  // useEffect(() => {
+  //   const handlePluginMessage = (event: MessageEvent) => {
+  //     console.log('🔌 收到消息:', event.data)
       
-      // 验证消息来源和格式
-      if (event.data && event.data.type === 'PLUGIN_FILE_DATA') {
-        console.log('✅ 插件文件数据消息:', {
-          filename: event.data.filename,
-          platform: event.data.platform,
-          contentLength: event.data.content?.length || 0
-        })
+  //     // 验证消息来源和格式
+  //     if (event.data && event.data.type === 'PLUGIN_FILE_DATA') {
+  //       console.log('✅ 插件文件数据消息:', {
+  //         filename: event.data.filename,
+  //         platform: event.data.platform,
+  //         contentLength: event.data.content?.length || 0
+  //       })
         
-        const { content, filename, platform } = event.data
-        simulateFileUpload(content, filename, platform)
-      } else {
-        console.log('❌ 非插件消息或格式错误')
-      }
-    }
+  //       const { content, filename, platform } = event.data
+  //       simulateFileUpload(content, filename, platform)
+  //     } else {
+  //       console.log('❌ 非插件消息或格式错误')
+  //     }
+  //   }
 
-    console.log('🎧 开始监听插件消息...')
-    window.addEventListener('message', handlePluginMessage)
+  //   console.log('🎧 开始监听插件消息...')
+  //   window.addEventListener('message', handlePluginMessage)
     
-    return () => {
-      console.log('🔇 停止监听插件消息')
-      window.removeEventListener('message', handlePluginMessage)
-    }
-  }, [simulateFileUpload])
+  //   return () => {
+  //     console.log('🔇 停止监听插件消息')
+  //     window.removeEventListener('message', handlePluginMessage)
+  //   }
+  // }, [simulateFileUpload])
 
   const handlePaste = useCallback(async (e: ClipboardEvent) => {
     e.preventDefault();
@@ -244,8 +243,7 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
     if (uploadFiles.length === 0) return;
 
     setCurrentStep("process");
-    setProcessingProgress(0);
-
+ 
     // 转换为ProcessingFile格式
     const files: ProcessingFile[] = uploadFiles.map((file) => ({
       ...file,
@@ -273,11 +271,11 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
           )
         );
 
-        // 调用Kimi API处理并生成.specs文件
+       
         const fileName = files[i]?.name || '未知文件';
-        const apiResult = await processFileWithKimi(files[i].file);
+        const apiResult = await processFileWithAihubmix(files[i].file);
 
-        // 生成.specs文件 - 使用新的状态链结构
+        // 生成.specs文件 - 基于新的压缩格式
         const specsFile = generateSpecsFile(
           fileName,
           apiResult.contextAnalysis
@@ -310,8 +308,6 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
           )
         );
 
-        // 更新进度
-        setProcessingProgress(Math.round(((i + 1) / files.length) * 100));
       } catch (error) {
         setProcessingFiles((prev) =>
           prev.map((file, index) =>
@@ -325,8 +321,7 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
           )
         );
 
-        // 更新进度（即使出错也要更新）
-        setProcessingProgress(Math.round(((i + 1) / files.length) * 100));
+      
       }
     }
 
@@ -351,7 +346,7 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
       setUploadFiles([]);
       setProcessingFiles([]);
       setCurrentStep("upload");
-      setProcessingProgress(0);
+    
     }, 1000);
   };
 
@@ -571,101 +566,180 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
             >
               所有文件已成功处理，选择您要进行的操作
             </p>
-            <div className="inline-flex rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div className="flex items-center space-x-4">
               <button
                 onClick={() => {
-                  try {
-                    const completedFiles = processingFiles.filter(
-                      (f) => f.processingState === "completed"
-                    );
-
-                    if (completedFiles.length === 0) {
-                      alert("没有已完成的文件可供复制");
-                      return;
-                    }
-
-                    // 生成用于复制的文本内容
-                    const copyText = completedFiles
-                      .map((file) => {
-                        const specs =
-                          file.result?.specsFile?.compressed_context;
-                        if (!specs) return "";
-
-                        return `文件: ${file?.name || '未知文件'}
-对话总结: ${specs.conversation_summary}
-用户画像: ${specs.user_profile?.communication_style} / ${
-                          specs.user_profile?.expertise_level
-                        }
-关键讨论: ${specs.key_discussions?.map((d: any) => d.topic).join(", ") || "无"}
-待办任务: ${specs.ongoing_tasks?.map((t: any) => t.task).join(", ") || "无"}
----`;
-                      })
-                      .join("\n\n");
-
-                    // 复制到剪贴板
-                    navigator.clipboard
-                      .writeText(copyText)
-                      .then(() => {
-                        console.log("结果已复制到剪贴板");
-                        // 可以添加一个临时的成功提示
-                      })
-                      .catch(() => {
-                        // 降级方案：选择文本
-                        const textArea = document.createElement("textarea");
-                        textArea.value = copyText;
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        document.execCommand("copy");
-                        document.body.removeChild(textArea);
-                        console.log("结果已复制到剪贴板（降级模式）");
-                      });
-                  } catch (error) {
-                    console.error("复制失败:", error);
-                    alert("复制失败，请重试");
-                  }
+                  // 重新处理逻辑
+                  setCurrentStep("upload");
+                  setProcessingFiles([]);
                 }}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border-r border-gray-200 rounded-l-lg hover:bg-gray-50 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:text-blue-600 transition-colors"
+                className="inline-flex items-center justify-center w-10 h-10 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"
+                title="重新处理"
               >
-                <Copy className="w-4 h-4 mr-2" />
-                复制结果
+                <RotateCcw className="w-5 h-5" />
               </button>
-              <button
-                onClick={() => {
-                  try {
-                    // 下载.specs文件
-                    const completedFiles = processingFiles.filter(
-                      (f) => f.processingState === "completed"
-                    );
+              
+              <div className="inline-flex">
+                <button
+                  onClick={() => {
+                    try {
+                      const completedFiles = processingFiles.filter(
+                        (f) => f.processingState === "completed"
+                      );
 
-                    if (completedFiles.length === 0) {
-                      alert("没有已完成的文件可供下载");
-                      return;
-                    }
-
-                    completedFiles.forEach((file) => {
-                      if (file.result?.specsFile) {
-                        downloadSpecsFile(
-                          file.result.specsFile,
-                          file.result.specsFileName
-                        );
+                      if (completedFiles.length === 0) {
+                        alert("没有已完成的文件可供复制");
+                        return;
                       }
-                    });
 
-                    // 显示成功提示
-                    console.log(
-                      `成功下载 ${completedFiles.length} 个.specs文件`
-                    );
-                    handleUpload();
-                  } catch (error) {
-                    console.error("下载文件失败:", error);
-                    alert("下载文件失败，请重试");
-                  }
-                }}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-r-lg hover:bg-gray-700 focus:z-10 focus:ring-2 focus:ring-blue-500 transition-colors"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                下载.specs文件
-              </button>
+                      // 生成用于复制的文本内容 - 优化的结构化格式
+                      const copyText = completedFiles
+                        .map((file) => {
+                          const analysis = file.result?.contextAnalysis;
+                          if (!analysis) return "";
+                          
+                          const compressedContext = (analysis as any)?.compressed_context;
+                          if (compressedContext) {
+                            // 生成结构化的摘要文本
+                            let summary = `📁 文件: ${file?.name || '未知文件'}\n`;
+                            summary += `🕒 处理时间: ${new Date(file.result?.generatedAt || '').toLocaleString()}\n\n`;
+                            
+                            // 核心摘要
+                            if (compressedContext.context_summary) {
+                              summary += `📋 核心摘要:\n`;
+                              summary += `  主题: ${compressedContext.context_summary.main_topic}\n`;
+                              summary += `  任务: ${compressedContext.context_summary.current_task}\n`;
+                              summary += `  意图: ${compressedContext.context_summary.user_intent}\n`;
+                              summary += `  阶段: ${compressedContext.context_summary.conversation_stage}\n\n`;
+                            }
+                            
+                            // 用户画像
+                            if (compressedContext.user_profile) {
+                              summary += `👤 用户画像:\n`;
+                              summary += `  专业水平: ${compressedContext.user_profile.expertise_level}\n`;
+                              summary += `  沟通风格: ${compressedContext.user_profile.communication_style}\n\n`;
+                            }
+                            
+                            // 决策记录（限制数量）
+                            if (compressedContext.decisions_made && compressedContext.decisions_made.length > 0) {
+                              summary += `✅ 关键决策 (${compressedContext.decisions_made.length}):\n`;
+                              compressedContext.decisions_made.slice(0, 3).forEach((decision: any, idx: number) => {
+                                summary += `  ${idx + 1}. ${decision.decision}\n`;
+                                summary += `     状态: ${decision.status}\n`;
+                              });
+                              if (compressedContext.decisions_made.length > 3) {
+                                summary += `  ... 还有 ${compressedContext.decisions_made.length - 3} 个决策\n`;
+                              }
+                              summary += `\n`;
+                            }
+                            
+                            // 待解决问题（限制数量）
+                            if (compressedContext.pending_issues && compressedContext.pending_issues.length > 0) {
+                              summary += `❓ 待解决问题 (${compressedContext.pending_issues.length}):\n`;
+                              compressedContext.pending_issues.slice(0, 3).forEach((issue: any, idx: number) => {
+                                summary += `  ${idx + 1}. ${issue.issue}\n`;
+                                summary += `     优先级: ${issue.priority}\n`;
+                              });
+                              if (compressedContext.pending_issues.length > 3) {
+                                summary += `  ... 还有 ${compressedContext.pending_issues.length - 3} 个问题\n`;
+                              }
+                              summary += `\n`;
+                            }
+                            
+                            // 上下文恢复
+                            if (compressedContext.context_restoration) {
+                              summary += `🔄 上下文恢复:\n`;
+                              summary += `  角色: ${compressedContext.context_restoration.role_continuation}\n`;
+                              summary += `  下一步: ${compressedContext.context_restoration.next_expected_action}\n\n`;
+                            }
+                            
+                            // 接收方使用要求
+                            if (compressedContext.receiver_instructions) {
+                              summary += `📋 接收方使用要求:\n`;
+                              summary += `  必须回复: ${compressedContext.receiver_instructions.mandatory_reply}\n`;
+                              summary += `  禁止行为: ${compressedContext.receiver_instructions.forbidden_actions}\n\n`;
+                            }
+                            
+                            summary += `---`;
+                            return summary;
+                          }
+                          
+                          // 备选：原始API响应
+                          const rawResponse = (analysis as any)?.raw_response;
+                          if (rawResponse) {
+                            return `📁 文件: ${file?.name || '未知文件'}\n🔧 原始API响应:\n${rawResponse}\n---`;
+                          }
+                          
+                          // 最后备选：完整分析对象
+                          return `📁 文件: ${file?.name || '未知文件'}\n📊 分析结果:\n${JSON.stringify(analysis, null, 2)}\n---`;
+                        })
+                        .filter(text => text.length > 0)
+                        .join("\n\n");
+
+                      // 复制到剪贴板
+                      navigator.clipboard
+                        .writeText(copyText)
+                        .then(() => {
+                          console.log("结果已复制到剪贴板");
+                          // 可以添加一个临时的成功提示
+                        })
+                        .catch(() => {
+                          // 降级方案：选择文本
+                          const textArea = document.createElement("textarea");
+                          textArea.value = copyText;
+                          document.body.appendChild(textArea);
+                          textArea.select();
+                          document.execCommand("copy");
+                          document.body.removeChild(textArea);
+                          console.log("结果已复制到剪贴板（降级模式）");
+                        });
+                    } catch (error) {
+                      console.error("复制失败:", error);
+                      alert("复制失败，请重试");
+                    }
+                  }}
+                  className="inline-flex items-center justify-center w-10 h-10 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors mr-3"
+                  title="复制结果"
+                >
+                  <Copy className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => {
+                    try {
+                      // 下载.specs文件
+                      const completedFiles = processingFiles.filter(
+                        (f) => f.processingState === "completed"
+                      );
+
+                      if (completedFiles.length === 0) {
+                        alert("没有已完成的文件可供下载");
+                        return;
+                      }
+
+                      completedFiles.forEach((file) => {
+                        if (file.result?.specsFile && file.result?.specsFileName) {
+                          downloadSpecsFile(
+                            file.result.specsFile,
+                            file.result.specsFileName
+                          );
+                        }
+                      });
+
+                      // 显示成功提示
+                      console.log(
+                        `成功下载 ${completedFiles.length} 个.specs文件`
+                      );
+                    } catch (error) {
+                      console.error("下载文件失败:", error);
+                      alert("下载文件失败，请重试");
+                    }
+                  }}
+                  className="inline-flex items-center justify-center w-10 h-10 text-white bg-gray-800 hover:bg-gray-700 rounded-full transition-colors"
+                  title="下载.specs文件"
+                >
+                  <Save className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </>
         )}
@@ -748,7 +822,183 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
                     </span>
                   </div>
 
-                  {/* 项目信息 */}
+                  {/* 显示解析结果 */}
+                  <div>
+                    <div className="font-medium text-gray-700 mb-2 flex items-center">
+                      解析结果
+                      {(file.result.contextAnalysis as any)?.parsing_method && (
+                        <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          {(file.result.contextAnalysis as any).parsing_method}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {(() => {
+                      const analysis = file.result.contextAnalysis;
+                      if (!analysis) return <div className="text-gray-500">无分析结果</div>;
+                      
+                      const compressedContext = (analysis as any)?.compressed_context;
+                      const parsingError = (analysis as any)?.parsing_error;
+                      
+                      // 如果有解析错误，显示原始响应
+                      if (parsingError) {
+                        return (
+                          <div>
+                            <div className="text-red-600 text-sm mb-2">解析失败: {parsingError}</div>
+                            <div className="bg-gray-50 p-4 rounded border">
+                              <pre className="text-sm whitespace-pre-wrap overflow-x-auto max-h-96 overflow-y-auto">
+                                {(analysis as any)?.raw_response || '暂无响应内容'}
+                              </pre>
+                            </div>
+                          </div>
+                        );
+                      }
+                      
+                      // 如果成功解析，显示结构化信息
+                      if (compressedContext) {
+                        return (
+                          <div className="space-y-3">
+                            {/* 元数据 */}
+                            {compressedContext.metadata && (
+                              <div className="bg-purple-50 p-3 rounded">
+                                <div className="font-medium text-purple-800 mb-1">📊 元数据</div>
+                                <div className="text-sm grid grid-cols-2 gap-2">
+                                  <div><strong>优先级:</strong> {compressedContext.metadata.priority_level}</div>
+                                  <div><strong>版本:</strong> {compressedContext.metadata.context_version}</div>
+                                  <div><strong>消息数:</strong> {compressedContext.metadata.original_length}</div>
+                                  <div><strong>压缩时间:</strong> {new Date(compressedContext.metadata.compression_time).toLocaleString()}</div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* 核心摘要 */}
+                            {compressedContext.context_summary && (
+                              <div className="bg-blue-50 p-3 rounded">
+                                <div className="font-medium text-blue-800 mb-1">📋 核心摘要</div>
+                                <div className="text-sm space-y-1">
+                                  <div><strong>主题:</strong> {compressedContext.context_summary.main_topic}</div>
+                                  <div><strong>任务:</strong> {compressedContext.context_summary.current_task}</div>
+                                  <div><strong>意图:</strong> {compressedContext.context_summary.user_intent}</div>
+                                  <div><strong>阶段:</strong> {compressedContext.context_summary.conversation_stage}</div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* 用户画像 */}
+                            {compressedContext.user_profile && (
+                              <div className="bg-green-50 p-3 rounded">
+                                <div className="font-medium text-green-800 mb-1">👤 用户画像</div>
+                                <div className="text-sm space-y-1">
+                                  <div><strong>专业水平:</strong> {compressedContext.user_profile.expertise_level}</div>
+                                  <div><strong>沟通风格:</strong> {compressedContext.user_profile.communication_style}</div>
+                                  {compressedContext.user_profile.preferences && (
+                                    <div><strong>偏好:</strong> {compressedContext.user_profile.preferences.join(', ')}</div>
+                                  )}
+                                  {compressedContext.user_profile.constraints && (
+                                    <div><strong>限制:</strong> {compressedContext.user_profile.constraints.join(', ')}</div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* 决策记录 */}
+                            {compressedContext.decisions_made && compressedContext.decisions_made.length > 0 && (
+                              <div className="bg-yellow-50 p-3 rounded">
+                                <div className="font-medium text-yellow-800 mb-1">✅ 决策记录 ({compressedContext.decisions_made.length})</div>
+                                <div className="text-sm space-y-2">
+                                  {compressedContext.decisions_made.slice(0, 2).map((decision: any, idx: number) => (
+                                    <div key={idx} className="border-l-2 border-yellow-300 pl-2">
+                                      <div><strong>{decision.decision}</strong></div>
+                                      <div className="text-gray-600">{decision.reasoning}</div>
+                                      <div className="text-xs text-yellow-700">状态: {decision.status}</div>
+                                    </div>
+                                  ))}
+                                  {compressedContext.decisions_made.length > 2 && (
+                                    <div className="text-xs text-gray-500">... 还有 {compressedContext.decisions_made.length - 2} 个决策</div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* 待解决问题 */}
+                            {compressedContext.pending_issues && compressedContext.pending_issues.length > 0 && (
+                              <div className="bg-red-50 p-3 rounded">
+                                <div className="font-medium text-red-800 mb-1">❓ 待解决问题 ({compressedContext.pending_issues.length})</div>
+                                <div className="text-sm space-y-2">
+                                  {compressedContext.pending_issues.slice(0, 2).map((issue: any, idx: number) => (
+                                    <div key={idx} className="border-l-2 border-red-300 pl-2">
+                                      <div><strong>{issue.issue}</strong></div>
+                                      <div className="text-gray-600">{issue.context}</div>
+                                      <div className="text-xs text-red-700">优先级: {issue.priority}</div>
+                                    </div>
+                                  ))}
+                                  {compressedContext.pending_issues.length > 2 && (
+                                    <div className="text-xs text-gray-500">... 还有 {compressedContext.pending_issues.length - 2} 个问题</div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* 上下文恢复指令 */}
+                            {compressedContext.context_restoration && (
+                              <div className="bg-indigo-50 p-3 rounded">
+                                <div className="font-medium text-indigo-800 mb-1">🔄 上下文恢复</div>
+                                <div className="text-sm space-y-1">
+                                  <div><strong>角色延续:</strong> {compressedContext.context_restoration.role_continuation}</div>
+                                  <div><strong>对话语调:</strong> {compressedContext.context_restoration.conversation_tone}</div>
+                                  <div><strong>下一步:</strong> {compressedContext.context_restoration.next_expected_action}</div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* 接收方使用要求 */}
+                            {compressedContext.receiver_instructions && (
+                              <div className="bg-orange-50 p-3 rounded">
+                                <div className="font-medium text-orange-800 mb-1">📋 接收方使用要求</div>
+                                <div className="text-sm space-y-1">
+                                  <div><strong>上下文理解:</strong> {compressedContext.receiver_instructions.context_understanding}</div>
+                                  {compressedContext.receiver_instructions.response_requirements && (
+                                    <div>
+                                      <strong>响应要求:</strong>
+                                      <ul className="list-disc list-inside ml-2 mt-1">
+                                        {compressedContext.receiver_instructions.response_requirements.map((req: string, idx: number) => (
+                                          <li key={idx} className="text-xs">{req}</li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                  <div><strong>必须回复:</strong> <span className="bg-orange-200 px-2 py-1 rounded text-xs font-mono">{compressedContext.receiver_instructions.mandatory_reply}</span></div>
+                                  <div><strong>禁止行为:</strong> {compressedContext.receiver_instructions.forbidden_actions}</div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* 原始响应折叠显示 */}
+                            <details className="bg-gray-50 p-3 rounded">
+                              <summary className="cursor-pointer text-sm font-medium text-gray-700">
+                                📄 查看原始API响应
+                              </summary>
+                              <pre className="text-xs text-gray-600 mt-2 whitespace-pre-wrap overflow-x-auto max-h-64 overflow-y-auto">
+                                {(analysis as any)?.raw_response || '暂无原始响应'}
+                              </pre>
+                            </details>
+                          </div>
+                        );
+                      }
+                      
+                      // 备选：显示完整分析对象
+                      return (
+                        <div className="bg-gray-50 p-4 rounded border">
+                          <pre className="text-sm whitespace-pre-wrap overflow-x-auto max-h-96 overflow-y-auto">
+                            {JSON.stringify(analysis, null, 2)}
+                          </pre>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* 项目信息 - 注释掉 */}
+                  {/*
                   <div>
                     <div className="font-medium text-gray-700 mb-1">
                       项目信息:
@@ -766,8 +1016,10 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
                       <div>• 概述: {file.result.summary}</div>
                     </div>
                   </div>
+                  */}
 
-                  {/* 角色定位 */}
+                  {/* 角色定位 - 注释掉 */}
+                  {/*
                   {file.result.specsFile?.instructions?.role_and_goal && (
                     <div>
                       <div className="font-medium text-gray-700 mb-1">
@@ -778,8 +1030,10 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
                       </p>
                     </div>
                   )}
+                  */}
 
-                  {/* 资产状态链 */}
+                  {/* 资产状态链 - 注释掉 */}
+                  {/*
                   {file.result.specsFile?.assets?.files &&
                     Object.keys(file.result.specsFile.assets.files).length >
                       0 && (
@@ -827,8 +1081,10 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
                         </div>
                       </div>
                     )}
+                  */}
 
-                  {/* 对话历史 */}
+                  {/* 对话历史 - 注释掉 */}
+                  {/*
                   {file.result.specsFile?.history?.length > 0 && (
                     <div>
                       <div className="font-medium text-gray-700 mb-1">
@@ -849,6 +1105,7 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
                       </div>
                     </div>
                   )}
+                  */}
 
                   <div className="text-right text-gray-400">
                     {new Date(file.result.generatedAt).toLocaleTimeString()}
@@ -877,21 +1134,14 @@ export function ContextProcessor({ user, onLogout }: ContextProcessorProps) {
       />
 
       <div className="max-w-7xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1
-            className="text-2xl font-medium"
-            style={{ color: "rgba(7, 11, 17, 1)" }}
-          >
-            上下文处理器
-          </h1>
-
-          {searchParams.get("id") && (
+        {searchParams.get("id") && (
+          <div className="flex justify-end mb-6">
             <div className="flex items-center space-x-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
               <CheckCircle className="w-4 h-4" />
               <span>上传成功 - ID: {searchParams.get("id")}</span>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {renderStepIndicator()}
 

@@ -46,8 +46,8 @@ export interface ProcessingResult {
 
 // .specs文件处理结果 - 更新为状态链结构
 export interface SpecsProcessingResult extends ProcessingResult {
-  specsFile?: import('@/types/specs').SpecsFile // 生成的.specs文件数据
-  specsFileName?: string // .specs文件名
+  specsFile?: import('@/types/specs').SpecsFile | null // 生成的.specs文件数据，调试模式下可为null
+  specsFileName?: string | null // .specs文件名，调试模式下可为null
   contextAnalysis?: import('@/types/specs').ContextAnalysisResult // AI分析的原始结果
 }
 
