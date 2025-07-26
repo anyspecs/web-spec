@@ -1,18 +1,21 @@
 import React from 'react'
 import { List, User, SortAsc, Calendar, Scale } from 'lucide-react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { cn } from '@/utils/cn'
 
 interface SidebarProps {
-  selectedCategory: string
   selectedSort: string
   onCategoryChange: (category: string) => void
   onSortChange: (sort: string) => void
 }
 
-export function Sidebar({ selectedCategory, selectedSort, onCategoryChange, onSortChange }: SidebarProps) {
+export function Sidebar({ selectedSort, onCategoryChange, onSortChange }: SidebarProps) {
+  const navigate = useNavigate()
+  const location = useLocation()
+  
   const categories = [
-    { id: 'all', label: '所有上下文', icon: List },
-    { id: 'my', label: '我的上下文', icon: User }
+    { id: 'all', label: '所有上下文', icon: List, route: '/' },
+    { id: 'my', label: '我的上下文', icon: User, route: '/my-contexts' }
   ]
 
   const sortOptions = [
@@ -38,12 +41,21 @@ export function Sidebar({ selectedCategory, selectedSort, onCategoryChange, onSo
         <ul>
           {categories.map((category, index) => {
             const Icon = category.icon
-            const isActive = selectedCategory === category.id
+            // 根据当前路由判断是否激活
+            const isActive = location.pathname === category.route || 
+                           (category.route === '/' && (location.pathname === '/contexts' || location.pathname === '/'))
             
             return (
               <li key={category.id} className={index < categories.length - 1 ? 'mb-3' : ''}>
                 <button
-                  onClick={() => onCategoryChange(category.id)}
+                  onClick={() => {
+                    navigate(category.route)
+                    // 如果在同一页面内，仍然调用筛选回调
+                    if (location.pathname === category.route || 
+                        (category.route === '/' && (location.pathname === '/contexts' || location.pathname === '/'))) {
+                      onCategoryChange(category.id)
+                    }
+                  }}
                   className={cn(
                     "flex items-center text-sm w-full text-left",
                     isActive 

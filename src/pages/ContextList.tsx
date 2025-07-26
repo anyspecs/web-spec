@@ -1,95 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { Search, Grid, List, Eye, Download, Share2, Trash2 } from 'lucide-react'
+import { Search, Grid, List, Eye, Download, Share2, Trash2, RefreshCw, User as UserIcon } from 'lucide-react'
 import { Header } from '@/components/Header'
 import { Sidebar } from '@/components/Sidebar'
 import { ContextCard } from '@/components/ContextCard'
 import { ContextViewer } from '@/components/ContextViewer'
+import { contextsApi, type GlobalContextFile } from '@/service/contextsApi'
 import type { ContextFile } from '@/types/context'
 import type { User } from '@/types/user'
 
-// Mock data updated to include system_prompt, conversation, and assets
-const mockContexts: ContextFile[] = [
-  {
-    id: "1",
-    name: "项目需求文档.ct",
-    description: "这是一个包含项目需求和规格的上下文文件，详细描述了功能和技术要求。",
-    updated_at: "2023-11-23T14:30:45Z",
-    size: "1.2MB",
-    system_prompt: "你是一个专业的产品经理助手，擅长分析和梳理项目需求。",
-    conversation: [
-      {
-        id: "1",
-        role: "user",
-        content: "请帮我总结一下这个项目的核心功能需求",
-        timestamp: "2023-11-23T14:30:45Z"
-      },
-      {
-        id: "2", 
-        role: "assistant",
-        content: "根据项目需求文档，核心功能需求包括：\n1. 用户身份认证和授权管理系统\n2. 实时数据同步和离线工作模式",
-        timestamp: "2023-11-23T14:31:00Z"
-      }
-    ],
-    assets: [
-      {
-        id: "1",
-        name: "项目需求说明书.pdf",
-        type: "application/pdf",
-        size: "2.4MB"
-      }
-    ]
-  },
-  {
-    id: "2",
-    name: "用户调研报告.ct",
-    description: "用户调研结果与分析，包含用户需求、痛点和建议改进方向。",
-    updated_at: "2023-11-20T10:15:30Z",
-    size: "0.8MB",
-    system_prompt: "你是一个用户体验研究专家。",
-    conversation: [],
-    assets: []
-  },
-  {
-    id: "3",
-    name: "开发技术文档.ct",
-    description: "详细的开发技术文档，包含架构设计、API文档和开发规范。",
-    updated_at: "2023-11-18T16:45:22Z",
-    size: "2.4MB",
-    system_prompt: "你是一个技术架构师。",
-    conversation: [],
-    assets: []
-  },
-  {
-    id: "4",
-    name: "市场分析报告.ct",
-    description: "对目标市场的详细分析，包括竞争对手情况、市场趋势和机会分析。",
-    updated_at: "2023-11-15T09:20:10Z",
-    size: "1.7MB",
-    system_prompt: "你是一个市场分析专家。",
-    conversation: [],
-    assets: []
-  },
-  {
-    id: "5",
-    name: "产品路线规划.ct",
-    description: "未来产品功能规划和开发时间线，包括短期和长期目标。",
-    updated_at: "2023-11-12T13:55:40Z",
-    size: "0.9MB",
-    system_prompt: "你是一个产品策略顾问。",
-    conversation: [],
-    assets: []
-  },
-  {
-    id: "6",
-    name: "测试结果报告.ct",
-    description: "系统测试结果和性能分析，包含测试用例和测试数据。",
-    updated_at: "2023-11-10T11:30:15Z",
-    size: "1.5MB",
-    system_prompt: "你是一个质量保证工程师。",
-    conversation: [],
-    assets: []
-  }
-]
 
 interface ContextListProps {
   user: User | null
@@ -97,14 +15,62 @@ interface ContextListProps {
 }
 
 export function ContextList({ user, onLogout }: ContextListProps) {
-  const [contexts, setContexts] = useState<ContextFile[]>(mockContexts)
+  const [contexts, setContexts] = useState<ContextFile[]>([])
+  const [globalFiles, setGlobalFiles] = useState<GlobalContextFile[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [isViewerOpen, setIsViewerOpen] = useState(false)
   const [selectedContext, setSelectedContext] = useState<ContextFile | null>(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedSort, setSelectedSort] = useState('name')
+  const [selectedSort, setSelectedSort] = useState('updated')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
+
+  // 将GlobalContextFile转换为ContextFile格式
+  const convertToContextFile = (globalFile: GlobalContextFile): ContextFile => {
+    return {
+      id: globalFile.id,
+      name: globalFile.name,
+      description: `由 ${globalFile.user_name} 上传 • ${contextsApi.formatTaskType(globalFile.task_type)}`,
+      updated_at: globalFile.modified_at,
+      size: contextsApi.formatFileSize(globalFile.size),
+      system_prompt: "这是一个用户上传的上下文文件。",
+      conversation: [],
+      assets: []
+    }
+  }
+
+  // 加载全局文件列表
+  const loadGlobalContexts = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      
+      const response = await contextsApi.getAllContexts()
+      setGlobalFiles(response.files)
+      
+      // 转换为ContextFile格式
+      const convertedContexts = response.files.map(convertToContextFile)
+      setContexts(convertedContexts)
+      
+    } catch (err) {
+      console.error('加载全局文件列表失败:', err)
+      setError(err instanceof Error ? err.message : '加载文件列表失败')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // 刷新数据
+  const handleRefresh = () => {
+    loadGlobalContexts()
+  }
+
+  // 组件挂载时加载数据
+  useEffect(() => {
+    loadGlobalContexts()
+  }, [])
 
   const handleNewContext = () => {
     console.log('Creating new context')
@@ -164,7 +130,6 @@ export function ContextList({ user, onLogout }: ContextListProps) {
   return (
     <div className="w-full min-h-screen">
       <Header
-        onNewContext={handleNewContext}
         isDarkMode={isDarkMode}
         onToggleTheme={() => setIsDarkMode(!isDarkMode)}
         user={user}
@@ -173,7 +138,6 @@ export function ContextList({ user, onLogout }: ContextListProps) {
       
       <div className="flex w-full">
         <Sidebar
-          selectedCategory={selectedCategory}
           selectedSort={selectedSort}
           onCategoryChange={setSelectedCategory}
           onSortChange={setSelectedSort}
@@ -187,7 +151,7 @@ export function ContextList({ user, onLogout }: ContextListProps) {
                 className="text-sm"
                 style={{ color: 'rgba(136, 138, 139, 1)' }}
               >
-                共{sortedContexts.length}个文件
+                {isLoading ? '加载中...' : `共${sortedContexts.length}个文件`}
               </span>
             </div>
             
@@ -195,7 +159,7 @@ export function ContextList({ user, onLogout }: ContextListProps) {
               <div className="relative mr-3">
                 <input
                   type="text"
-                  placeholder="搜索当前列表..."
+                  placeholder="搜索所有用户的文件..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="input w-64 h-10 pr-10 pl-4"
@@ -204,6 +168,16 @@ export function ContextList({ user, onLogout }: ContextListProps) {
                   <Search className="w-4 h-4" style={{ color: 'rgba(136, 138, 139, 1)' }} />
                 </div>
               </div>
+              
+              {/* 刷新按钮 */}
+              <button
+                onClick={handleRefresh}
+                disabled={isLoading}
+                className="mr-3 p-2 rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                title="刷新文件列表"
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              </button>
               
               <div 
                 className="flex p-1 rounded-md"
@@ -235,18 +209,52 @@ export function ContextList({ user, onLogout }: ContextListProps) {
             </div>
           </div>
           
-          <div className="grid grid-cols-3 gap-6">
-            {sortedContexts.map((context) => (
-              <ContextCard
-                key={context.id}
-                context={context}
-                onView={handleView}
-                onDownload={handleDownload}
-                onDelete={handleDelete}
-                onShare={handleShare}
-              />
-            ))}
-          </div>
+          {/* 错误状态 */}
+          {error && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="text-red-500 mb-4">⚠️ 加载失败</div>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <button
+                onClick={handleRefresh}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                重试
+              </button>
+            </div>
+          )}
+
+          {/* 加载状态 */}
+          {isLoading && !error && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <RefreshCw className="w-8 h-8 animate-spin text-gray-400 mb-4" />
+              <p className="text-gray-600">正在加载文件列表...</p>
+            </div>
+          )}
+
+          {/* 文件列表 */}
+          {!isLoading && !error && (
+            <>
+              {sortedContexts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="text-gray-400 mb-4">📁 暂无文件</div>
+                  <p className="text-gray-600">还没有用户上传任何文件</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-6">
+                  {sortedContexts.map((context) => (
+                    <ContextCard
+                      key={context.id}
+                      context={context}
+                      onView={handleView}
+                      onDownload={handleDownload}
+                      onDelete={handleDelete}
+                      onShare={handleShare}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </main>
       </div>
 

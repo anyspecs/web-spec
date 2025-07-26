@@ -1,19 +1,35 @@
-import React from 'react'
-import { FileText, Upload, Plus, User as UserIcon, Search } from 'lucide-react'
+import React, { useState } from 'react'
+import { FileText, Upload, Plus, User as UserIcon, Search, ChevronDown, MessageSquare } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/utils/cn'
 import type { User } from '@/types/user'
 
 interface HeaderProps {
-  onNewContext: () => void
   isDarkMode: boolean
   onToggleTheme: () => void
   user?: User | null
   onLogout?: () => void
 }
 
-export function Header({ onNewContext, isDarkMode, onToggleTheme, user, onLogout }: HeaderProps) {
+export function Header({ isDarkMode, onToggleTheme, user, onLogout }: HeaderProps) {
   const navigate = useNavigate()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
+
+  const handleMouseEnter = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      setTimeoutId(null)
+    }
+    setIsDropdownOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    const id = setTimeout(() => {
+      setIsDropdownOpen(false)
+    }, 300) // 增加到300ms延迟
+    setTimeoutId(id)
+  }
 
   return (
     <header className="header flex sticky items-center w-full px-6 top-0 z-10">
@@ -48,21 +64,46 @@ export function Header({ onNewContext, isDarkMode, onToggleTheme, user, onLogout
       </div>
       
       <div className="flex items-center">
-        <button
-          onClick={() => navigate('/processor')}
-          className="btn btn-secondary btn-sm mr-3"
+        <div 
+          className="relative mr-6"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          <Upload className="w-4 h-4 mr-2" />
-          上传
-        </button>
-        
-        <button
-          onClick={onNewContext}
-          className="btn btn-primary btn-sm mr-6"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          新建上下文
-        </button>
+          <button
+            className="btn btn-secondary btn-sm flex items-center"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            上传
+            <ChevronDown className="w-4 h-4 ml-2" />
+          </button>
+          
+          {isDropdownOpen && (
+            <div 
+              className="absolute top-full left-0 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50"
+            >
+              <button
+                onClick={() => {
+                  navigate('/processor')
+                  setIsDropdownOpen(false)
+                }}
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+              >
+                <MessageSquare className="w-4 h-4 mr-3" />
+                上传聊天记录
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/specs-upload')
+                  setIsDropdownOpen(false)
+                }}
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+              >
+                <FileText className="w-4 h-4 mr-3" />
+                上传specs文件
+              </button>
+            </div>
+          )}
+        </div>
         
         {user ? (
           <div className="flex items-center space-x-3">

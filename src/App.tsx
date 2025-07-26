@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ContextList } from '@/pages/ContextList'
 import { ContextProcessor } from '@/pages/ContextProcessor'
+import { SpecsUpload } from '@/pages/SpecsUpload'
+import { MyContexts } from '@/pages/MyContexts'
+import SpecsDetail from '@/pages/SpecsDetail'
 import { Login } from '@/pages/Login'
 import { AuthCallback } from '@/pages/AuthCallback'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
@@ -94,6 +97,30 @@ function App() {
         element={
           <ProtectedRoute isAuthenticated={!!user}>
             <ContextProcessor user={user} onLogout={handleLogout} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/specs-upload" 
+        element={
+          <ProtectedRoute isAuthenticated={!!user}>
+            <SpecsUpload user={user} onLogout={handleLogout} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/specs-detail/:filename" 
+        element={
+          <ProtectedRoute isAuthenticated={!!user}>
+            <SpecsDetail user={user} onLogout={handleLogout} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/my-contexts" 
+        element={
+          <ProtectedRoute isAuthenticated={!!user}>
+            <MyContexts user={user} onLogout={handleLogout} />
           </ProtectedRoute>
         } 
       />

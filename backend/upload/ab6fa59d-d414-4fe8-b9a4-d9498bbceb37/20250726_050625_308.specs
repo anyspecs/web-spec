@@ -1,0 +1,139 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "家教中介业务利润分成与前端激励机制设计",
+    "task_type": "chat_compression",
+    "createdAt": "2025-07-25T15:13:09.974Z",
+    "source_file": "conversation_2025-07-25T14-44-04-979Z.md",
+    "processing_model": "aihubmix-compression"
+  },
+  "instructions": {},
+  "assets": {
+    "files": {}
+  },
+  "examples": [],
+  "history": [],
+  "compressed_context": {
+    "metadata": {
+      "original_length": 14,
+      "compression_time": "2025-07-25T15:00:00Z",
+      "context_version": "v1.0",
+      "priority_level": "高"
+    },
+    "context_summary": {
+      "main_topic": "家教中介业务利润分成与前端激励机制设计",
+      "current_task": "确定大学生兼职前端的薪酬方案（有效微信+成单提成）",
+      "user_intent": "在维持30-50%高转化率的前提下，用30元/有效微信+50元/成单的模式激励大学生，同时保障合伙人利润最大化",
+      "conversation_stage": "接近完成"
+    },
+    "key_entities": {
+      "people": [
+        "我（合伙人A，负责前端+后端）",
+        "对方（合伙人B，负责中端1）",
+        "大学生兼职（前端引流）",
+        "家教代理",
+        "家长"
+      ],
+      "concepts": [
+        "有效微信定义",
+        "转化率30-50%",
+        "利润分成350元/单两人平分",
+        "零底薪+阶梯提成",
+        "闲鱼高意向流量"
+      ],
+      "objects": [
+        "飞书表格",
+        "微信群",
+        "350元信息费"
+      ],
+      "locations": [],
+      "time_references": [
+        "初创期",
+        "未来规模化"
+      ]
+    },
+    "user_profile": {
+      "expertise_level": "专家",
+      "communication_style": "技术性",
+      "preferences": [
+        "数据驱动决策",
+        "高转化率优势最大化",
+        "简单清晰规则"
+      ],
+      "constraints": [
+        "每单信息费固定350元",
+        "面向大学生兼职",
+        "需保障合伙人利润"
+      ]
+    },
+    "decisions_made": [
+      {
+        "decision": "采用30元/有效微信+50元/成单的前端薪酬方案",
+        "reasoning": "实践验证30-50%高转化率，该模型在33%转化率下净利润210元/单，可行",
+        "status": "已确认"
+      },
+      {
+        "decision": "保留10元/微信+80元/成单作为未来新成员备用方案",
+        "reasoning": "预防规模化后转化率下滑风险",
+        "status": "待执行"
+      }
+    ],
+    "pending_issues": [
+      {
+        "issue": "未来规模化时如何维持高转化率",
+        "context": "创始人光环与高质量渠道可能随团队扩张稀释",
+        "priority": "中"
+      },
+      {
+        "issue": "需明确“有效微信”判定标准并写入SOP",
+        "context": "防止大学生刷量",
+        "priority": "高"
+      }
+    ],
+    "resources_used": {
+      "tools": [
+        "飞书表格",
+        "微信群"
+      ],
+      "files": [
+        "闲鱼运营SOP草稿",
+        "家长对接话术"
+      ],
+      "external_refs": []
+    },
+    "conversation_flow": [
+      {
+        "stage": "分成结构讨论",
+        "key_exchange": "提出350元信息费两人平分场景下的前端激励问题",
+        "outcome": "确认零底薪+提成模式"
+      },
+      {
+        "stage": "方案对比",
+        "key_exchange": "对比固定金额与按比例提成优劣",
+        "outcome": "选定固定金额80元/单"
+      },
+      {
+        "stage": "大学生适配",
+        "key_exchange": "确认目标为大学生兼职，倾向方案二",
+        "outcome": "采用零底薪+阶梯提成"
+      },
+      {
+        "stage": "金额细化",
+        "key_exchange": "提出30+50模型并质疑转化率假设",
+        "outcome": "确认30-50%高转化率属实，模型可行"
+      },
+      {
+        "stage": "最终确认",
+        "key_exchange": "基于实践数据重新评估30+50模型",
+        "outcome": "当前阶段可直接采用，未来设降级方案"
+      }
+    ],
+    "context_restoration": {
+      "role_continuation": "继续作为商业策略顾问，协助完善SOP与风险预案",
+      "conversation_tone": "数据驱动、直接高效",
+      "knowledge_assumptions": "用户已理解固定金额与按比例模式的差异，掌握财务推演方法",
+      "next_expected_action": "将30+50方案写入前端招募文案与飞书SOP，并设定“有效微信”判定标准"
+    }
+  },
+  "raw_api_response": "{\"metadata\":{\"original_length\":14,\"compression_time\":\"2025-07-25T15:00:00Z\",\"context_version\":\"v1.0\",\"priority_level\":\"高\"},\"context_summary\":{\"main_topic\":\"家教中介业务利润分成与前端激励机制设计\",\"current_task\":\"确定大学生兼职前端的薪酬方案（有效微信+成单提成）\",\"user_intent\":\"在维持30-50%高转化率的前提下，用30元/有效微信+50元/成单的模式激励大学生，同时保障合伙人利润最大化\",\"conversation_stage\":\"接近完成\"},\"key_entities\":{\"people\":[\"我（合伙人A，负责前端+后端）\",\"对方（合伙人B，负责中端1）\",\"大学生兼职（前端引流）\",\"家教代理\",\"家长\"],\"concepts\":[\"有效微信定义\",\"转化率30-50%\",\"利润分成350元/单两人平分\",\"零底薪+阶梯提成\",\"闲鱼高意向流量\"],\"objects\":[\"飞书表格\",\"微信群\",\"350元信息费\"],\"locations\":[],\"time_references\":[\"初创期\",\"未来规模化\"]},\"user_profile\":{\"expertise_level\":\"专家\",\"communication_style\":\"技术性\",\"preferences\":[\"数据驱动决策\",\"高转化率优势最大化\",\"简单清晰规则\"],\"constraints\":[\"每单信息费固定350元\",\"面向大学生兼职\",\"需保障合伙人利润\"]},\"decisions_made\":[{\"decision\":\"采用30元/有效微信+50元/成单的前端薪酬方案\",\"reasoning\":\"实践验证30-50%高转化率，该模型在33%转化率下净利润210元/单，可行\",\"status\":\"已确认\"},{\"decision\":\"保留10元/微信+80元/成单作为未来新成员备用方案\",\"reasoning\":\"预防规模化后转化率下滑风险\",\"status\":\"待执行\"}],\"pending_issues\":[{\"issue\":\"未来规模化时如何维持高转化率\",\"context\":\"创始人光环与高质量渠道可能随团队扩张稀释\",\"priority\":\"中\"},{\"issue\":\"需明确“有效微信”判定标准并写入SOP\",\"context\":\"防止大学生刷量\",\"priority\":\"高\"}],\"resources_used\":{\"tools\":[\"飞书表格\",\"微信群\"],\"files\":[\"闲鱼运营SOP草稿\",\"家长对接话术\"],\"external_refs\":[]},\"conversation_flow\":[{\"stage\":\"分成结构讨论\",\"key_exchange\":\"提出350元信息费两人平分场景下的前端激励问题\",\"outcome\":\"确认零底薪+提成模式\"},{\"stage\":\"方案对比\",\"key_exchange\":\"对比固定金额与按比例提成优劣\",\"outcome\":\"选定固定金额80元/单\"},{\"stage\":\"大学生适配\",\"key_exchange\":\"确认目标为大学生兼职，倾向方案二\",\"outcome\":\"采用零底薪+阶梯提成\"},{\"stage\":\"金额细化\",\"key_exchange\":\"提出30+50模型并质疑转化率假设\",\"outcome\":\"确认30-50%高转化率属实，模型可行\"},{\"stage\":\"最终确认\",\"key_exchange\":\"基于实践数据重新评估30+50模型\",\"outcome\":\"当前阶段可直接采用，未来设降级方案\"}],\"context_restoration\":{\"role_continuation\":\"继续作为商业策略顾问，协助完善SOP与风险预案\",\"conversation_tone\":\"数据驱动、直接高效\",\"knowledge_assumptions\":\"用户已理解固定金额与按比例模式的差异，掌握财务推演方法\",\"next_expected_action\":\"将30+50方案写入前端招募文案与飞书SOP，并设定“有效微信”判定标准\"}}"
+}

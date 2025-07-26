@@ -1,23 +1,46 @@
 import React from 'react'
-import { FileText, Eye, Download, Share2, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { FileText, Download, Share2, Trash2 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import type { ContextFile } from '@/types/context'
 
 interface ContextCardProps {
   context: ContextFile
-  onView: (context: ContextFile) => void
   onDownload: (context: ContextFile) => void
   onDelete: (context: ContextFile) => void
-  onShare: (context: ContextFile) => void
+  originalFileName?: string
 }
 
-export function ContextCard({ context, onView, onDownload, onDelete, onShare }: ContextCardProps) {
+export function ContextCard({ context, onDownload, onDelete, originalFileName }: ContextCardProps) {
+  const navigate = useNavigate()
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     })
+  }
+
+  const handleApply = async () => {
+    try {
+      // 使用原始文件名或context名称来构建URL
+      const fileName = originalFileName || context.name
+
+      // 跳转到specs详情页面
+      const encodedFileName = encodeURIComponent(fileName)
+      const specsDetailUrl = `/specs-detail/${encodedFileName}`
+      
+      // 复制完整URL到剪贴板
+      const fullUrl = `${window.location.origin}${specsDetailUrl}`
+      await navigator.clipboard.writeText(fullUrl)
+      
+      // 跳转到详情页面
+      navigate(specsDetailUrl)
+    } catch (error) {
+      console.error('应用失败:', error)
+      alert('应用失败，请重试')
+    }
   }
 
   return (
@@ -64,15 +87,6 @@ export function ContextCard({ context, onView, onDownload, onDelete, onShare }: 
         </span>
         <div className="flex">
           <button
-            onClick={() => onView(context)}
-            className="flex justify-center items-center w-8 h-8 hover:bg-gray-100 rounded transition-colors"
-            title="查看详情"
-            style={{ color: 'rgba(136, 138, 139, 1)' }}
-          >
-            <Eye className="w-4 h-4" />
-          </button>
-          
-          <button
             onClick={() => onDownload(context)}
             className="flex justify-center items-center w-8 h-8 hover:bg-gray-100 rounded transition-colors"
             title="下载文件"
@@ -82,10 +96,10 @@ export function ContextCard({ context, onView, onDownload, onDelete, onShare }: 
           </button>
           
           <button
-            onClick={() => onShare(context)}
-            className="flex justify-center items-center w-8 h-8 hover:bg-gray-100 rounded transition-colors"
-            title="分享"
-            style={{ color: 'rgba(136, 138, 139, 1)' }}
+            onClick={handleApply}
+            className="flex justify-center items-center w-8 h-8 hover:bg-blue-50 rounded transition-colors"
+            title="应用到新对话"
+            style={{ color: 'rgba(59, 130, 246, 1)' }}
           >
             <Share2 className="w-4 h-4" />
           </button>

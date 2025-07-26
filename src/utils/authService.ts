@@ -43,7 +43,7 @@ export class AuthService {
 
     try {
       // 从后端获取授权URL
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/google/url`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/google/url`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -100,7 +100,7 @@ export class AuthService {
     try {
       const state = sessionStorage.getItem('oauth_state')
       
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/${provider}/callback`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/${provider}/callback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ export class AuthService {
   // 验证用户令牌
   async validateToken(token: string): Promise<User | null> {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/validate`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/validate`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -164,7 +164,7 @@ export class AuthService {
     const token = localStorage.getItem('authToken')
     if (token) {
       try {
-        await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/logout`, {
+        await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`

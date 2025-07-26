@@ -279,39 +279,68 @@ export class AihubmixApiService {
       // 结构化文本解析失败
     }
 
+    // 🔧 优化：最后尝试基础解析，创建最小可用的.specs格式
+    try {
+      const fallbackData = this.createFallbackSpecsFormat(responseText);
+      if (fallbackData) {
+        return {
+          success: true,
+          data: fallbackData,
+          method: "Fallback",
+        };
+      }
+    } catch (fallbackError) {
+      // 最后的降级解析也失败
+    }
+
     return {
       success: false,
-      error: "无法解析为预期的聊天压缩格式",
+      error: "无法解析为预期的.specs格式",
     };
   }
 
   /**
-   * 验证是否为有效的聊天压缩格式
+   * 验证是否为有效的.specs格式 - 优化版本，所有字段可选
    */
   private isValidCompressionFormat(data: any): boolean {
     if (!data || typeof data !== "object") return false;
 
-    // 检查必需的顶级字段
-    const requiredFields = ["metadata", "context_summary", "user_profile"];
-    const hasRequiredFields = requiredFields.every(
-      (field) => data[field] && typeof data[field] === "object"
+    // 🔧 优化：放宽验证标准，适应灵活的.specs格式
+    
+    // 检查基本结构：至少要有一个有意义的顶级字段
+    const validTopLevelFields = [
+      "metadata", "instructions", "assets", "history", 
+      "compressed_context", "context_summary", "user_profile",
+      "examples", "version"
+    ];
+    
+    const hasValidTopLevel = validTopLevelFields.some(field => 
+      data[field] && (typeof data[field] === "object" || typeof data[field] === "string")
     );
 
-    if (!hasRequiredFields) return false;
+    if (!hasValidTopLevel) return false;
 
-    // 检查关键子字段
-    const hasContextSummary =
-      data.context_summary.main_topic && data.context_summary.current_task;
+    // 如果有metadata，检查基本结构
+    if (data.metadata) {
+      // metadata存在时，至少要有name或task_type之一
+      const hasBasicMetadata = data.metadata.name || data.metadata.task_type;
+      if (!hasBasicMetadata) return false;
+    }
 
-    const hasMetadata =
-      data.metadata.compression_time && data.metadata.context_version;
+    // 如果是compressed_context类型，检查关键字段（放宽要求）
+    if (data.compressed_context) {
+      const contextSummary = data.compressed_context.context_summary;
+      if (contextSummary) {
+        // 至少要有主题或任务之一
+        const hasMinimalContext = contextSummary.main_topic || 
+                                 contextSummary.current_task || 
+                                 contextSummary.user_intent;
+        if (!hasMinimalContext) return false;
+      }
+    }
 
-    // 检查新增的接收方使用要求字段（可选）
-    const hasReceiverInstructions = !data.receiver_instructions || 
-      (typeof data.receiver_instructions === "object" && 
-       data.receiver_instructions.mandatory_reply);
-
-    return hasContextSummary && hasMetadata && hasReceiverInstructions;
+    // 🎯 核心原则：宽进严出，只要有合理结构就接受
+    return true;
   }
 
   /**
@@ -424,7 +453,7 @@ export class AihubmixApiService {
   }
 
   /**
-   * 解析文本段落
+   * 解析文本段落 - 优化版本，更灵活的字段提取
    */
   private parseTextSection(lines: string[]): any {
     const result: any = {};
@@ -434,33 +463,69 @@ export class AihubmixApiService {
       if (!trimmed) continue;
 
       if (trimmed.includes(":")) {
-        const [key, value] = trimmed.split(":", 2);
+        const [key, ...valueParts] = trimmed.split(":");
         const cleanKey = key.trim().replace(/^\s*-\s*/, "");
-        const cleanValue = value?.trim().replace(/^["']|["']$/g, "");
+        const cleanValue = valueParts.join(":").trim().replace(/^["']|["']$/g, "");
 
-        if (cleanValue) {
-          result[cleanKey] = cleanValue;
+        // 🔧 优化：即使值为空也保留字段，用于灵活的.specs格式
+        if (cleanKey) {
+          result[cleanKey] = cleanValue || "";
         }
+      } else if (trimmed.startsWith("-")) {
+        // 处理列表项
+        const listKey = "items";
+        if (!result[listKey]) result[listKey] = [];
+        result[listKey].push(trimmed.replace(/^\s*-\s*/, ""));
       }
     }
 
-    return Object.keys(result).length > 0 ? result : lines.join("\n");
+    // 🎯 优化：保持结构化数据，即使某些字段为空
+    return Object.keys(result).length > 0 ? result : { content: lines.join("\n") };
   }
 
-  private async mockApiCall(
-    _content: string,
-    _fileName: string
-  ): Promise<void> {
-    // 模拟网络延迟
-    const delay = 2000 + Math.random() * 3000; // 2-5秒随机延迟
-    await new Promise((resolve) => setTimeout(resolve, delay));
-
-    // 模拟API调用可能的错误
-    if (Math.random() < 0.1) {
-      // 10% 概率出错
-      throw new Error("网络连接错误");
+  /**
+   * 创建降级的.specs格式 - 当所有解析方法都失败时使用
+   */
+  private createFallbackSpecsFormat(responseText: string): any {
+    // 提取可能的标题作为name
+    const lines = responseText.split("\n").filter(line => line.trim());
+    const firstLine = lines[0]?.trim() || "";
+    
+    // 简单启发式方法提取主题
+    let extractedName = "AI分析结果";
+    if (firstLine.length > 0 && firstLine.length < 100) {
+      extractedName = firstLine.replace(/^#+\s*/, "").replace(/[:：].*$/, "");
     }
+
+    // 判断可能的任务类型
+    let taskType: "general_chat" | "document_analysis" | "code_project" | "chat_compression" = "general_chat";
+    const lowerText = responseText.toLowerCase();
+    if (lowerText.includes("代码") || lowerText.includes("code") || lowerText.includes("函数")) {
+      taskType = "code_project";
+    } else if (lowerText.includes("文档") || lowerText.includes("document") || lowerText.includes("分析")) {
+      taskType = "document_analysis";
+    } else if (lowerText.includes("压缩") || lowerText.includes("上下文") || lowerText.includes("context")) {
+      taskType = "chat_compression";
+    }
+
+    return {
+      version: "1.0",
+      metadata: {
+        name: extractedName,
+        task_type: taskType,
+        createdAt: new Date().toISOString(),
+        analysis_model: "fallback-parser"
+      },
+      instructions: {
+        role_and_goal: "基于AI分析结果生成的上下文信息"
+      },
+      // 将原始响应作为内容保存
+      raw_api_response: responseText.length > 10000 ? 
+        responseText.substring(0, 10000) + "... [内容过长已截断]" : 
+        responseText
+    };
   }
+
 
   async testConnection(): Promise<boolean> {
     try {

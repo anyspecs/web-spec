@@ -56,4 +56,26 @@ export interface ProcessingFile extends UploadFile {
   content?: string
   processingState: ProcessingState
   result?: SpecsProcessingResult
+}
+
+// 用户上传的文件接口 - 对应后端API返回格式
+export interface UserUploadedFile {
+  timestamp: string
+  original_name: string
+  saved_name: string
+  size: number
+  created_at: string
+  modified_at: string
+  name: string
+  task_type: string
+  source_file: string
+  specs_file?: string | null
+  access_url: string
+}
+
+// 后端API响应格式
+export interface UserUploadsResponse {
+  files: UserUploadedFile[]
+  total: number
+  user_uuid: string
 } 

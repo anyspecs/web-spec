@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "聊天记录压缩",
+    "task_type": "chat_compression",
+    "createdAt": "2025-07-26T07:26:21.743Z",
+    "source_file": "conversation_2025-07-25T16-14-14-358Z.md"
+  },
+  "compressed_context": {
+    "version": "1.0",
+    "metadata": {
+      "name": "```json",
+      "task_type": "chat_compression",
+      "createdAt": "2025-07-26T07:26:21.742Z",
+      "analysis_model": "fallback-parser"
+    },
+    "instructions": {
+      "role_and_goal": "基于AI分析结果生成的上下文信息"
+    },
+    "raw_api_response": "```json\n{\n  \"version\": \"1.0\",\n  \"metadata\": {\n    \"name\": \"家教中介收益模式讨论\",\n    \"task_type\": \"general_chat\",\n    \"createdAt\": \"2025-07-25T16:14:14Z\",\n    \"source_file\": \"conversation_2025-07-25T16-14-14-358Z.md\",\n    \"source_platform\": \"Gemini\"\n  },\n  \"instructions\": {\n    \"role_and_goal\": \"讨论家教中介的收益模式和激励机制\",\n    \"context\": \"用户与AI讨论家教中介的前端和后端分工及收益分配\",\n    \"key_topics\": [\n      \"收益模式\",\n      \"转化率\",\n      \"激励机制\"\n    ]\n  },\n  \"examples\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"我招的大部分都是大学生 应该是方案2好一点\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"您说得非常对，针对招募大学生这个群体，方案二（零底薪 + 高额阶梯提成）确实是明显更优的选择。\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"我要怎么和别人说这个30+50的模型，他更能接受\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"当然，要把这个模式说得让大学生欣然接受，关键在于清晰、有吸引力，并且能打消他们的顾虑。\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    }\n  ],\n  \"compressed_context\": {\n    \"context_summary\": {\n      \"main_topic\": \"家教中介的收益模式\",\n      \"current_task\": \"讨论收益分配和激励机制\",\n      \"user_intent\": \"设计合理的激励方案\",\n      \"conversation_stage\": \"收益模式讨论\"\n    },\n    \"key_entities\": {\n      \"people\": [\"用户\", \"AI\"],\n      \"concepts\": [\"收益模式\", \"转化率\", \"激励机制\"],\n      \"objects\": [\"家教中介\", \"微信\", \"订单\"],\n      \"locations\": [],\n      \"time_references\": [\"2025-07-25\"]\n    },\n    \"user_profile\": {\n      \"expertise_level\": \"初创企业主\",\n      \"communication_style\": \"直接\",\n      \"preferences\": [\"高效激励\", \"清晰透明\"],\n      \"constraints\": [\"控制成本\", \"提高转化率\"]\n    },\n    \"decisions_made\": [\n      {\n        \"decision\": \"采用30元/微信 + 50元/成单的激励模式\",\n        \"reasoning\": \"基于高转化率的实践数据\",\n        \"status\": \"待实施\"\n      }\n    ],\n    \"pending_issues\": [],\n    \"resources_used\": {\n      \"tools\": [\"飞书\", \"闲鱼\"],\n      \"files\": [],\n      \"external_refs\": []\n    },\n    \"conversation_flow\": [\n      {\n        \"stage\": \"收益模式讨论\",\n        \"key_exchange\": \"讨论不同的激励方案\",\n        \"outcome\": \"确定采用30元/微信 + 50元/成单的模式\"\n      }\n    ],\n    \"context_restoration\": {\n      \"role_continuation\": \"用户与AI继续讨论收益模式\",\n      \"conversation_tone\": \"专业且友好\",\n      \"knowledge_assumptions\": \"用户对家教中介有一定了解\",\n      \"next_expected_action\": \"用户与潜在员工沟通激励模式\"\n    },\n    \"receiver_instructions\": {\n      \"context_understanding\": \"理解收益模式的激励机制\",\n      \"response_requirements\": [\"清晰解释激励方案\"],\n      \"mandatory_reply\": \"确认收益模式的可行性\",\n      \"forbidden_actions\": \"避免复杂的激励计算\"\n    }\n  }\n}\n```",
+    "receiver_instructions": {
+      "context_understanding": "请仔细阅读上述压缩的上下文信息，理解当前的对话状态、用户需求和项目背景。",
+      "response_requirements": [
+        "基于上下文保持角色一致性",
+        "参考用户画像调整沟通风格",
+        "关注待解决问题并提供帮助",
+        "遵循已确定的决策和约束条件"
+      ],
+      "mandatory_reply": "我已理解上述上下文信息，将基于这些信息继续为您提供帮助。有什么我可以协助您的吗？",
+      "forbidden_actions": "不要忽略上下文中的重要信息，不要改变已建立的角色设定，不要重复解决已完成的问题。"
+    }
+  },
+  "raw_api_response": "```json\n{\n  \"version\": \"1.0\",\n  \"metadata\": {\n    \"name\": \"家教中介收益模式讨论\",\n    \"task_type\": \"general_chat\",\n    \"createdAt\": \"2025-07-25T16:14:14Z\",\n    \"source_file\": \"conversation_2025-07-25T16-14-14-358Z.md\",\n    \"source_platform\": \"Gemini\"\n  },\n  \"instructions\": {\n    \"role_and_goal\": \"讨论家教中介的收益模式和激励机制\",\n    \"context\": \"用户与AI讨论家教中介的前端和后端分工及收益分配\",\n    \"key_topics\": [\n      \"收益模式\",\n      \"转化率\",\n      \"激励机制\"\n    ]\n  },\n  \"examples\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"我招的大部分都是大学生 应该是方案2好一点\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"您说得非常对，针对招募大学生这个群体，方案二（零底薪 + 高额阶梯提成）确实是明显更优的选择。\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"我要怎么和别人说这个30+50的模型，他更能接受\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"当然，要把这个模式说得让大学生欣然接受，关键在于清晰、有吸引力，并且能打消他们的顾虑。\",\n      \"timestamp\": \"2025-07-25T16:14:14Z\"\n    }\n  ],\n  \"compressed_context\": {\n    \"context_summary\": {\n      \"main_topic\": \"家教中介的收益模式\",\n      \"current_task\": \"讨论收益分配和激励机制\",\n      \"user_intent\": \"设计合理的激励方案\",\n      \"conversation_stage\": \"收益模式讨论\"\n    },\n    \"key_entities\": {\n      \"people\": [\"用户\", \"AI\"],\n      \"concepts\": [\"收益模式\", \"转化率\", \"激励机制\"],\n      \"objects\": [\"家教中介\", \"微信\", \"订单\"],\n      \"locations\": [],\n      \"time_references\": [\"2025-07-25\"]\n    },\n    \"user_profile\": {\n      \"expertise_level\": \"初创企业主\",\n      \"communication_style\": \"直接\",\n      \"preferences\": [\"高效激励\", \"清晰透明\"],\n      \"constraints\": [\"控制成本\", \"提高转化率\"]\n    },\n    \"decisions_made\": [\n      {\n        \"decision\": \"采用30元/微信 + 50元/成单的激励模式\",\n        \"reasoning\": \"基于高转化率的实践数据\",\n        \"status\": \"待实施\"\n      }\n    ],\n    \"pending_issues\": [],\n    \"resources_used\": {\n      \"tools\": [\"飞书\", \"闲鱼\"],\n      \"files\": [],\n      \"external_refs\": []\n    },\n    \"conversation_flow\": [\n      {\n        \"stage\": \"收益模式讨论\",\n        \"key_exchange\": \"讨论不同的激励方案\",\n        \"outcome\": \"确定采用30元/微信 + 50元/成单的模式\"\n      }\n    ],\n    \"context_restoration\": {\n      \"role_continuation\": \"用户与AI继续讨论收益模式\",\n      \"conversation_tone\": \"专业且友好\",\n      \"knowledge_assumptions\": \"用户对家教中介有一定了解\",\n      \"next_expected_action\": \"用户与潜在员工沟通激励模式\"\n    },\n    \"receiver_instructions\": {\n      \"context_understanding\": \"理解收益模式的激励机制\",\n      \"response_requirements\": [\"清晰解释激励方案\"],\n      \"mandatory_reply\": \"确认收益模式的可行性\",\n      \"forbidden_actions\": \"避免复杂的激励计算\"\n    }\n  }\n}\n```"
+}

@@ -50,10 +50,10 @@ export class KimiApiService {
   }
 
   private extractSummaryFromAnalysis(analysis: ContextAnalysisResult): string {
-    // 从分析结果中提取摘要信息
+    // 从分析结果中提取摘要信息 - 支持可选字段
     const projectName = analysis.metadata?.name || "上下文分析";
     const taskType = analysis.metadata?.task_type || "general_chat";
-    const fileCount = Object.keys(analysis.assets?.files || {}).length;
+    const fileCount = analysis.assets?.files ? Object.keys(analysis.assets.files).length : 0;
 
     let summary = `项目: ${projectName} (${taskType})`;
 
@@ -61,8 +61,16 @@ export class KimiApiService {
       summary += `，包含 ${fileCount} 个资产文件`;
     }
 
-    if (analysis.history?.length > 0) {
+    if (analysis.history && analysis.history.length > 0) {
       summary += `，${analysis.history.length} 轮对话记录`;
+    }
+
+    // 如果有压缩上下文信息，添加额外描述
+    if ((analysis as any).compressed_context) {
+      const compressedContext = (analysis as any).compressed_context;
+      if (compressedContext.context_summary?.main_topic) {
+        summary += `，主题: ${compressedContext.context_summary.main_topic}`;
+      }
     }
 
     return summary;
