@@ -1,93 +1,93 @@
-# ContextHub Frontend
+# Web-Spec
 
-简洁的 ContextHub 前端界面，参考 GitHub 设计风格，专注于 .ct 文件的管理功能。
+A modern web application for managing and sharing context files with a clean, GitHub-inspired interface.
 
-## 功能特性
+## Features
 
-- 🎨 **简洁设计**：参考 GitHub 的设计语言，界面清晰
-- 📁 **文件上传**：支持拖拽上传 .ct 文件
-- 📥 **文件下载**：一键下载 .ct 文件
-- 🔍 **智能搜索**：支持按文件名和描述搜索
-- 📊 **排序功能**：按更新时间、文件名、大小排序
-- 🗑️ **文件管理**：查看、下载、删除、分享功能
-- 👁️ **内容预览**：点击卡片查看完整的上下文内容
-- ✏️ **在线编辑**：直接在界面中编辑系统提示词和对话历史
-- 🌙 **主题切换**：支持浅色/深色模式切换
+- **Clean Design**: GitHub-inspired design language with clear interface
+- **File Upload**: Support for drag-and-drop upload of .specs files
+- **File Download**: One-click download of .specs files
+- **Smart Search**: Search by filename and description
+- **Sorting**: Sort by update time, filename, and size
+- **File Management**: View, download, delete, and share functionality
+- **Content Preview**: Click cards to view complete context content
+- **Online Editing**: Edit system prompts and conversation history directly in the interface
+- **Theme Switching**: Support for light/dark mode switching
 
-## 主要页面
+## Main Pages
 
-### 1. 首页（Context 列表页）
-- 显示所有 .ct 文件（卡片形式）
-- 支持搜索和排序
-- 文件操作：查看、下载、删除、分享
+### 1. Homepage (Context List Page)
+- Display all .specs files (card format)
+- Support for search and sorting
+- File operations: view, download, delete, share
 
-### 2. 上传模态框
-- 拖拽或点击上传 .ct 文件
-- 支持多文件上传
-- 文件状态显示
+### 2. Upload Modal
+- Drag and drop or click to upload .specs files
+- Support for multiple file uploads
+- File status display
 
-### 3. 上下文查看器
-- **预览模式**：查看完整的上下文内容
-- **编辑模式**：在线编辑系统提示词和对话历史
-- **可折叠区域**：System Prompt、对话历史、附件列表
-- **实时保存**：编辑后直接保存到列表
+### 3. Context Viewer
+- **Preview Mode**: View complete context content
+- **Edit Mode**: Online editing of system prompts and conversation history
+- **Collapsible Areas**: System Prompt, conversation history, attachment list
+- **Real-time Save**: Save directly to list after editing
 
-## 技术栈
+## Tech Stack
 
-- **React 18** - 用户界面框架
-- **TypeScript** - 类型安全
-- **Tailwind CSS** - 样式框架
-- **Vite** - 构建工具
-- **React Router** - 路由管理
-- **Lucide React** - 图标库
+- **React 18** - User interface framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling framework
+- **Vite** - Build tool
+- **React Router** - Route management
+- **Lucide React** - Icon library
 
-## 快速开始
+## Quick Start
 
-### 安装依赖
+### Install Dependencies
 ```bash
 cd frontend
 npm install
 ```
 
-### 开发模式
+### Development Mode
 ```bash
 npm run dev
 ```
 
-应用将在 `http://localhost:3000` 启动。
+The application will start at `http://localhost:3000`.
 
-### 构建生产版本
+### Build Production Version
 ```bash
 npm run build
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 frontend/
 ├── src/
-│   ├── components/          # 组件
-│   │   ├── Header.tsx      # 页面头部
-│   │   ├── UploadModal.tsx # 上传模态框
-│   │   ├── ContextCard.tsx # 文件卡片
-│   │   └── ContextViewer.tsx # 上下文查看器
-│   ├── pages/              # 页面
-│   │   └── ContextList.tsx # 文件列表页
-│   ├── types/              # 类型定义
-│   │   └── context.ts      # 上下文文件类型
-│   ├── utils/              # 工具函数
-│   │   └── cn.ts           # CSS 类名合并
-│   ├── styles/             # 样式文件
-│   │   └── index.css       # 全局样式
-│   ├── App.tsx             # 主应用
-│   └── main.tsx            # 应用入口
-├── package.json            # 项目配置
-├── vite.config.ts          # Vite 配置
-├── tailwind.config.js      # Tailwind 配置
-└── tsconfig.json           # TypeScript 配置
+│   ├── components/          # Components
+│   │   ├── Header.tsx      # Page header
+│   │   ├── UploadModal.tsx # Upload modal
+│   │   ├── ContextCard.tsx # File card
+│   │   └── ContextViewer.tsx # Context viewer
+│   ├── pages/              # Pages
+│   │   └── ContextList.tsx # File list page
+│   ├── types/              # Type definitions
+│   │   └── context.ts      # Context file types
+│   ├── utils/              # Utility functions
+│   │   └── cn.ts           # CSS class name merging
+│   ├── styles/             # Style files
+│   │   └── index.css       # Global styles
+│   ├── App.tsx             # Main application
+│   └── main.tsx            # Application entry
+├── package.json            # Project configuration
+├── vite.config.ts          # Vite configuration
+├── tailwind.config.js      # Tailwind configuration
+└── tsconfig.json           # TypeScript configuration
 ```
 
-## 数据结构
+## Data Structure
 
 ```typescript
 interface ContextFile {
@@ -117,27 +117,27 @@ interface Asset {
 }
 ```
 
-## 使用指南
+## Usage Guide
 
-### 查看上下文内容
-1. 在文件列表中点击任意卡片的"查看"按钮
-2. 在弹出的查看器中浏览完整内容
-3. 可以展开/折叠不同的内容区域
+### View Context Content
+1. Click the "View" button on any card in the file list
+2. Browse the complete content in the popup viewer
+3. Expand/collapse different content areas
 
-### 编辑上下文内容
-1. 在查看器中点击"编辑"按钮
-2. 修改系统提示词、描述或对话历史
-3. 点击"保存"按钮应用更改
+### Edit Context Content
+1. Click the "Edit" button in the viewer
+2. Modify system prompts, descriptions, or conversation history
+3. Click the "Save" button to apply changes
 
-### 管理对话历史
-- 在编辑模式下可以添加新消息
-- 可以删除不需要的消息
-- 支持修改消息内容
+### Manage Conversation History
+- Add new messages in edit mode
+- Delete unwanted messages
+- Support for modifying message content
 
-## 设计特点
+## Design Features
 
-- **GitHub 风格**：简洁的卡片设计和布局
-- **响应式**：支持桌面和移动设备
-- **交互友好**：清晰的按钮和状态反馈
-- **性能优化**：快速的搜索和排序
-- **可折叠界面**：节省空间，提高浏览效率 
+- **GitHub Style**: Clean card design and layout
+- **Responsive**: Support for desktop and mobile devices
+- **User-friendly**: Clear buttons and status feedback
+- **Performance Optimized**: Fast search and sorting
+- **Collapsible Interface**: Space-saving, improved browsing efficiency 
